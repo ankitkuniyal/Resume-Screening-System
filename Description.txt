@@ -1,0 +1,170 @@
+AI-Based Resume Screening System (SQL-Backed)
+
+* Project Overview *
+This system automates the process of filtering resumes based on job requirements. It stores applicants' details, extracts key skills, and matches them with job postings. The system ranks candidates based on relevance using SQL queries.  
+
+---
+
+### **Database Design (ER Model)**  
+
+#### **Entities & Attributes**  
+
+1. **Applicants** (`applicants` table)  
+   - `applicant_id` (Primary Key)  
+   - `name`  
+   - `email`  
+   - `phone`  
+   - `experience_years`  
+   - `resume_text` (Stores extracted resume content)  
+
+2. **Skills** (`skills` table)  
+   - `skill_id` (Primary Key)  
+   - `skill_name`  
+
+3. **Applicant Skills** (`applicant_skills` table)  
+   - `applicant_id` (Foreign Key → `applicants.applicant_id`)  
+   - `skill_id` (Foreign Key → `skills.skill_id`)  
+
+4. **Job Postings** (`jobs` table)  
+   - `job_id` (Primary Key)  
+   - `job_title`  
+   - `company_name`  
+   - `experience_required`  
+   - `description`  
+
+5. **Job Requirements (Skills for each job)** (`job_skills` table)  
+   - `job_id` (Foreign Key → `jobs.job_id`)  
+   - `skill_id` (Foreign Key → `skills.skill_id`)  
+
+6. **Matches (Ranking Table)** (`job_matches` table)  
+   - `match_id` (Primary Key)  
+   - `applicant_id` (Foreign Key → `applicants.applicant_id`)  
+   - `job_id` (Foreign Key → `jobs.job_id`)  
+   - `match_score` (Stores percentage match)  
+
+---
+
+### **SQL Schema**  
+
+```sql
+CREATE TABLE applicants (
+    applicant_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(15),
+    experience_years INT,
+    resume_text TEXT
+);
+
+CREATE TABLE skills (
+    skill_id INT PRIMARY KEY AUTO_INCREMENT,
+    skill_name VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE applicant_skills (
+    applicant_id INT,
+    skill_id INT,
+    FOREIGN KEY (applicant_id) REFERENCES applicants(applicant_id),
+    FOREIGN KEY (skill_id) REFERENCES skills(skill_id)
+);
+
+CREATE TABLE jobs (
+    job_id INT PRIMARY KEY AUTO_INCREMENT,
+    job_title VARCHAR(100),
+    company_name VARCHAR(100),
+    experience_required INT,
+    description TEXT
+);
+
+CREATE TABLE job_skills (
+    job_id INT,
+    skill_id INT,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id),
+    FOREIGN KEY (skill_id) REFERENCES skills(skill_id)
+);
+
+CREATE TABLE job_matches (
+    match_id INT PRIMARY KEY AUTO_INCREMENT,
+    applicant_id INT,
+    job_id INT,
+    match_score DECIMAL(5,2),
+    FOREIGN KEY (applicant_id) REFERENCES applicants(applicant_id),
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id)
+);
+```
+
+---
+
+### **Key SQL Queries**  
+
+#### **1. Insert Sample Data**  
+```sql
+INSERT INTO skills (skill_name) VALUES ('Python'), ('SQL'), ('Machine Learning'), ('Java'), ('React');
+INSERT INTO applicants (name, email, phone, experience_years, resume_text) 
+VALUES ('Alice', 'alice@example.com', '9876543210', 5, 'Python, SQL, Machine Learning');
+
+INSERT INTO applicant_skills (applicant_id, skill_id) 
+VALUES (1, (SELECT skill_id FROM skills WHERE skill_name = 'Python')),
+       (1, (SELECT skill_id FROM skills WHERE skill_name = 'SQL'));
+
+INSERT INTO jobs (job_title, company_name, experience_required, description) 
+VALUES ('Data Scientist', 'TechCorp', 3, 'Looking for Python, Machine Learning, SQL expertise.');
+
+INSERT INTO job_skills (job_id, skill_id) 
+VALUES (1, (SELECT skill_id FROM skills WHERE skill_name = 'Python')),
+       (1, (SELECT skill_id FROM skills WHERE skill_name = 'Machine Learning')),
+       (1, (SELECT skill_id FROM skills WHERE skill_name = 'SQL'));
+```
+
+---
+
+### **2. Resume Matching Algorithm (SQL Query)**  
+Find candidates whose skills match the job requirements and calculate a match percentage:  
+
+```sql
+SELECT 
+    a.applicant_id, a.name, j.job_id, j.job_title,
+    COUNT(DISTINCT ak.skill_id) * 100 / COUNT(DISTINCT jk.skill_id) AS match_score
+FROM applicants a
+JOIN applicant_skills ak ON a.applicant_id = ak.applicant_id
+JOIN job_skills jk ON ak.skill_id = jk.skill_id
+JOIN jobs j ON jk.job_id = j.job_id
+GROUP BY a.applicant_id, j.job_id
+ORDER BY match_score DESC;
+```
+**Explanation:**  
+- Joins applicants with job postings based on common skills.  
+- Counts matching skills and divides by total job-required skills to get a percentage.  
+- Orders by highest match percentage.  
+
+---
+
+### **3. Get Best Matched Candidates for a Job**  
+```sql
+SELECT a.name, a.email, jm.match_score
+FROM job_matches jm
+JOIN applicants a ON jm.applicant_id = a.applicant_id
+WHERE jm.job_id = 1
+ORDER BY jm.match_score DESC
+LIMIT 5;
+```
+**Explanation:**  
+- Retrieves the top 5 candidates for a given job.  
+- Orders by highest match score.  
+
+---
+
+### **Additional Features**  
+1. **Full-Text Search on Resumes:** Use `FULLTEXT` index on `resume_text` for keyword-based filtering.  
+2. **Experience Filtering:** Filter candidates based on experience.  
+3. **Weightage System:** Assign higher weights to critical skills for better ranking.  
+
+---
+
+### **Tech Stack**  
+- **Database:** MySQL / PostgreSQL  
+- **Frontend:** HTML, CSS, JavaScript (if making a UI)  
+- **Backend:** Python (Flask/Django) or Node.js (Express)  
+- **AI Extension (Optional):** Use NLP (spaCy) to extract skills from resumes  
+
+Would you like help implementing this with Python for automation?
