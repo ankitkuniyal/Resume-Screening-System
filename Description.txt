@@ -6,7 +6,7 @@ This system automates the process of filtering resumes based on job requirements
 ---
 
 ### **Database Design (ER Model)**  
-
+ 
 #### **Entities & Attributes**  
 
 1. **Applicants** (`applicants` table)  
