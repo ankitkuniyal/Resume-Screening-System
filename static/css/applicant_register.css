@@ -1,0 +1,184 @@
+:root {
+    --primary-color: #7eabea;
+    --primary-color-dark: #10289f;
+    --secondary-color: #f9fafe;
+    --text-color: #333030;
+    --white: #ffffff;
+    --max-width: 1200px;  
+  }
+  
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(45deg, var(--secondary-color), var(--primary-color)), 
+                url('res.webp'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-blend-mode: overlay;
+    color: var(--text-color);
+  }
+  
+  .container {
+    width: 80%;
+    max-width: var(--max-width);
+    margin: 50px auto;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  header {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color-dark);
+    margin-bottom: 25px;
+  }
+  
+  .form-outer {
+    position: relative;
+    padding: 1rem;
+    background-color: var(--white);
+    border-radius: 8px;
+  }
+  
+  .slide-page {
+    position: relative;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--primary-color-dark);
+    font-weight: 600;
+  }
+  
+  .field {
+    margin-bottom: 20px;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--primary-color-dark);
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus,
+  input[type="date"]:focus,
+  input[type="password"]:focus,
+  select:focus {
+    border-color: var(--primary-color-dark);
+    box-shadow: 0 0 10px rgba(16, 40, 159, 0.3);
+    outline: none;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+    display: none;
+  }
+  
+  .checkbox-group label {
+    padding: 12px 24px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    user-select: none;
+  }
+  
+  .checkbox-group input[type="checkbox"]:checked + label {
+    background-color: var(--primary-color-dark);
+    transform: scale(1.05);
+  }
+  
+  .checkbox-group label:hover {
+    background-color: var(--primary-color-dark);
+    transform: scale(1.05);
+  }
+  
+  .btns {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  
+  button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.3s;
+    text-transform: uppercase;
+  }
+  
+  button:hover {
+    background-color: var(--primary-color-dark);
+    transform: scale(1.05);
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  @media (max-width: 900px) {
+    .container {
+      width: 90%;
+    }
+  
+    header {
+      font-size: 2rem;
+    }
+  
+    button {
+      width: 100%;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+  
+    .checkbox-group label {
+      font-size: 1rem;
+      padding: 10px 20px;
+    }
+  }

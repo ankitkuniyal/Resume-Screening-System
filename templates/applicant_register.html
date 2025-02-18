@@ -1,11 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applicant Registration Form</title>
+    <link rel="stylesheet" href="/static/css/applicant_register.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>Registration Form</header>
+      <div class="form-outer">
+        <form>
+          <div class="slide-page">
+            <!-- Page 1: Personal Details -->
+            <div class="page active">
+              <div class="title">Personal Details:</div>
+              <div class="field">
+                <div class="label">Full Name</div>
+                <input type="text" required />
+              </div>
+              <div class="field">
+                <div class="label">Email Address</div>
+                <input type="email" required />
+              </div>
+              <div class="field">
+                <div class="label">Mobile Number</div>
+                <input type="tel" required />
+              </div>
+              <div class="field">
+                <div class="label">Date of Birth</div>
+                <input type="date" required />
+              </div>
+              <div class="field">
+                <div class="label">Gender</div>
+                <select required>
+                  <option value="" disabled selected>Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="label">Address</div>
+                <input type="text" required />
+              </div>
+            </div>
+
+            <!-- Page 2: Educational Background -->
+            <div class="page">
+              <div class="title">Educational Background:</div>
+              <div class="field">
+                <div class="label">Highest Qualification</div>
+                <select required>
+                  <option value="" disabled selected>
+                    Select your qualification
+                  </option>
+                  <option value="High School">High School</option>
+                  <option value="Diploma">Diploma</option>
+                  <option value="Bachelor's">Bachelor's</option>
+                  <option value="Master's">Master's</option>
+                  <option value="PhD">PhD</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="label">Field Of Study</div>
+                <input type="text" required />
+              </div>
+            </div>
+
+            <!-- Page 3: Work Experience -->
+            <div class="page">
+              <div class="title">Work Experience:</div>
+              <div class="field">
+                <div class="label">Years of Experience</div>
+                <select required>
+                  <option value="" disabled selected>
+                    Select Years of Experience
+                  </option>
+                  <option value="0">0 (Fresher)</option>
+                  <option value="1">1 Year</option>
+                  <option value="2">2 Years</option>
+                  <option value="3">3 Years</option>
+                  <option value="4">4 Years</option>
+                  <option value="5">5+ Years</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Page 4: Skills -->
+            <div class="page">
+              <div class="title">Skills:</div>
+              <div class="field checkbox-group">
+                <input type="checkbox" id="java" name="skills" value="Java" />
+                <label for="java">Java</label>
+
+                <input
+                  type="checkbox"
+                  id="python"
+                  name="skills"
+                  value="Python"
+                />
+                <label for="python">Python</label>
+
+                <input type="checkbox" id="sql" name="skills" value="SQL" />
+                <label for="sql">SQL</label>
+
+                <input type="checkbox" id="cpp" name="skills" value="C++" />
+                <label for="cpp">C++</label>
+
+                <input
+                  type="checkbox"
+                  id="javascript"
+                  name="skills"
+                  value="JavaScript"
+                />
+                <label for="javascript">JavaScript</label>
+
+                <input type="checkbox" id="csharp" name="skills" value="C#" />
+                <label for="csharp">C#</label>
+
+                <input type="checkbox" id="php" name="skills" value="PHP" />
+                <label for="php">PHP</label>
+
+                <input type="checkbox" id="ruby" name="skills" value="Ruby" />
+                <label for="ruby">Ruby</label>
+
+                <input type="checkbox" id="swift" name="skills" value="Swift" />
+                <label for="swift">Swift</label>
+
+                <input type="checkbox" id="go" name="skills" value="Go" />
+                <label for="go">Go</label>
+
+                <input
+                  type="checkbox"
+                  id="kotlin"
+                  name="skills"
+                  value="Kotlin"
+                />
+                <label for="kotlin">Kotlin</label>
+
+                <input
+                  type="checkbox"
+                  id="typescript"
+                  name="skills"
+                  value="TypeScript"
+                />
+                <label for="typescript">TypeScript</label>
+
+                <input type="checkbox" id="html" name="skills" value="HTML" />
+                <label for="html">HTML</label>
+
+                <input type="checkbox" id="css" name="skills" value="CSS" />
+                <label for="css">CSS</label>
+
+                <input type="checkbox" id="rust" name="skills" value="Rust" />
+                <label for="rust">Rust</label>
+
+                <input type="checkbox" id="scala" name="skills" value="Scala" />
+                <label for="scala">Scala</label>
+
+                <input type="checkbox" id="dart" name="skills" value="Dart" />
+                <label for="dart">Dart</label>
+
+                <input
+                  type="checkbox"
+                  id="elixir"
+                  name="skills"
+                  value="Elixir"
+                />
+                <label for="elixir">Elixir</label>
+
+                <input
+                  type="checkbox"
+                  id="haskell"
+                  name="skills"
+                  value="Haskell"
+                />
+                <label for="haskell">Haskell</label>
+
+                <input type="checkbox" id="r" name="skills" value="R" />
+                <label for="r">R</label>
+
+                <input
+                  type="checkbox"
+                  id="matlab"
+                  name="skills"
+                  value="MATLAB"
+                />
+                <label for="matlab">MATLAB</label>
+              </div>
+            </div>
+          </div>
+          <div class="field btns">
+            <button type="submit" class="submit">SUBMIT</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="static/js/app_register.js"></script>
+  </body>
 </html>
