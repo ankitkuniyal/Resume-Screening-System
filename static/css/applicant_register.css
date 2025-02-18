@@ -105,8 +105,12 @@
   }
   
   .checkbox-group input[type="checkbox"] {
-    display: none;
-  }
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
   
   .checkbox-group label {
     padding: 12px 24px;
