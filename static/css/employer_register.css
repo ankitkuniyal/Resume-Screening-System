@@ -1,4 +1,4 @@
-
+/* 
 :root {
 --primary-color: #7eabea;
 --primary-color-dark: #10289f;
@@ -163,4 +163,152 @@ font-size: 1rem;
 padding: 10px 20px;
 }
 }
+ */
 
+
+
+
+ :root {
+      --primary-color: #2563eb;
+      --primary-color-light: #3b82f6;
+      --background-color: #f1f5f9;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --white: #ffffff;
+      --border-color: #cbd5e1;
+      --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+      --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius-default: 0.75rem;
+      --transition-smooth: all 0.3s ease-in-out;
+    }
+    
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-weight: 400;
+      padding: 1rem;
+    }
+    
+    .container {
+      width: 90%;
+      max-width: 650px;
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--radius-default);
+      box-shadow: var(--shadow-subtle);
+      border: 1px solid var(--border-color);
+    }
+    
+    header {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+    
+    .label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 0.4rem;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-default);
+      font-size: 1rem;
+      transition: var(--transition-smooth);
+      outline: none;
+    }
+    
+    input:focus,
+    select:focus {
+      border-color: var(--primary-color-light);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .checkbox-group label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+    
+    button {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      padding: 0.8rem;
+      border-radius: var(--radius-default);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    
+    button:hover {
+      background-color: var(--primary-color-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+      }
+    
+      header {
+        font-size: 1.8rem;
+      }
+    }
+    
