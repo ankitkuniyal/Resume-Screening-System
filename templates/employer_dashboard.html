@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0d1117;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 260px;
+            background: #161b22;
+            padding: 20px;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar h2 {
+            text-align: center;
+            color: cyan;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            background: #21262d;
+            text-align: center;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .sidebar ul li:hover {
+            background: cyan;
+            color: #000;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #161b22;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #21262d;
+            color: white;
+            border: 1px solid cyan;
+            border-radius: 8px;
+        }
+        .card {
+            background: #161b22;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        .button {
+            padding: 12px;
+            background: cyan;
+            border: none;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #00b3b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li>Dashboard</li>
+            <li>Post a Job</li>
+            <li>My Job Listings</li>
+            <li>Search Applicants</li>
+            <li>Shortlisted Candidates</li>
+            <li>Messages</li>
+            <li>Profile Settings</li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="topbar">
+            <h2>Employer Dashboard</h2>
+            <button class="button">Logout</button>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search skills... (e.g., Python, React, AI)">
+        </div>
+        <h3>Jobs Posted</h3>
+        <div class="card">
+            <p><strong>Job Title:</strong> Software Engineer</p>
+            <p><strong>Date Posted:</strong> Jan 25, 2025</p>
+            <p><strong>Applicants:</strong> 15</p>
+            <p><strong>Shortlisted:</strong> 5</p>
+            <p><strong>Status:</strong> Active</p>
+        </div>
+        <h3>Shortlisted Applicants</h3>
+        <div class="card">
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Matched Skills:</strong> Python, React</p>
+            <p><strong>Resume:</strong> <a href="#">Download</a></p>
+            <button class="button">Schedule Interview</button>
+        </div>
+    </div>
+</body>
+</html>
