@@ -16,13 +16,19 @@
         <div class="form-container sign-up">
             <h1>Create Account</h1>
             <span>Use your email for registration</span>
-            <form action="{{ url_for('register_applicant') }}" method="GET">
-                <button type="submit">Sign Up as Applicant</button>
-            </form>
-            <form action="{{ url_for('register_employer') }}" method="GET">
-                <button type="submit">Sign Up as Employer</button>
-            </form>
+            <div>
+                <form action="{{ url_for('register_applicant') }}" method="GET">
+                    <button type="submit">Sign Up as Applicant</button>
+                </form>
+                <form action="{{ url_for('register_employer') }}" method="GET">
+                    <button type="submit">Sign Up as Employer</button>
+                </form>
+            </div>
+                
+            
+            
         </div>
+        
 
         <!-- Sign In Form -->
         <div class="form-container sign-in">
