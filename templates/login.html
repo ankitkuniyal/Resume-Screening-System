@@ -14,8 +14,8 @@
     <div class="form-container sign-up">
         <h1>Create Account</h1>
         <span>Use your email for registration</span>
-        <div>
-    <form action="{{ url_for('register_applicant') }}" method="GET">
+        <div class="box">
+             <form action="{{ url_for('register_applicant') }}" method="GET">
                 <button type="submit">Sign Up as Applicant</button>
             </form>
             <form action="{{ url_for('register_employer') }}" method="GET">

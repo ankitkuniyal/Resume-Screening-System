@@ -59,7 +59,7 @@ body {
   background-color: var(--primary-color-dark);
   color: #fff;
   font-size: 12px;
-  padding: 10px 45px;
+  padding: 10px;
   border: 1px solid transparent;
   border-radius: 8px;
   font-weight: 600;
@@ -142,6 +142,33 @@ body {
   transform: translateX(-100%);
   opacity: 1;
   z-index: 5;
+}
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Adjust spacing between buttons */
+  align-items: center;
+}
+
+.box form {
+  margin: 0;
+}
+
+.box button {
+  margin: 2px 0; /* Reduce space between buttons */
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  background-color: var(--primary-color-dark);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.box button:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.05);
 }
 
 /* Social icons */
