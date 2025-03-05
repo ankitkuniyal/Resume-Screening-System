@@ -10,27 +10,31 @@ app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0Password%40SQL@localhost/resume_screening'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 db = SQLAlchemy(app)
+
+# User Model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False, unique=True)
+    email = db.Column(db.String(150), nullable=False, unique=True)
+    phone = db.Column(db.String(15), nullable=True)  # For applicants
+    password = db.Column(db.String(256), nullable=False)
+    role = db.Column(db.Enum('applicant', 'employer', name='user_roles'), nullable=False)
+    company_name = db.Column(db.String(100), nullable=True)  # For employer
+    designation = db.Column(db.String(50), nullable=True)  # For employer
 
 # Employer Model
 class Employer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     industry = db.Column(db.String(50), nullable=False)
-    website = db.Column(db.String(255))
+    website = db.Column(db.String(255), nullable=True)
     address = db.Column(db.String(255), nullable=False)
-    fullname = db.Column(db.String(100), nullable=False)
-    designation = db.Column(db.String(50), nullable=False)
     contact = db.Column(db.String(15), nullable=False)
-    linkedin = db.Column(db.String(255))
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    linkedin = db.Column(db.String(255), nullable=True)
+    company_logo = db.Column(db.String(255), nullable=True)  # Path to uploaded logo
 
     jobs = db.relationship('Job', backref='employer', lazy=True)
-
-    def __repr__(self):
-        return f"<Employer {self.company_name}>"
 
 # Job Model
 class Job(db.Model):
@@ -39,34 +43,28 @@ class Job(db.Model):
     company = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     job_type = db.Column(db.String(50), nullable=False)
-    salary = db.Column(db.String(50))
+    salary = db.Column(db.String(50), nullable=True)
     description = db.Column(db.Text, nullable=False)
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=False)
-
-    def __repr__(self):
-        return f"<Job {self.job_title} at {self.company}>"
 
 # Applicant Model
 class Applicant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    phone = db.Column(db.String(15))
-    experience_years = db.Column(db.Integer)
-    resume_text = db.Column(db.Text, nullable=False)
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    dob = db.Column(db.Date, nullable=False)
+    gender = db.Column(db.String(10), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    highest_qualification = db.Column(db.String(50), nullable=False)
+    field_of_study = db.Column(db.String(100), nullable=False)
+    experience_years = db.Column(db.Integer, nullable=True, default=0)
+    resume = db.Column(db.String(255), nullable=True)  # Path to uploaded resume
+    
     skills = db.relationship('ApplicantSkill', backref='applicant', lazy=True)
-
-    def __repr__(self):
-        return f"<Applicant {self.name}>"
 
 # Skills Model
 class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     skill_name = db.Column(db.String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return f"<Skill {self.skill_name}>"
 
 # Applicant Skills Model
 class ApplicantSkill(db.Model):
@@ -74,56 +72,106 @@ class ApplicantSkill(db.Model):
     applicant_id = db.Column(db.Integer, db.ForeignKey('applicant.id'), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey('skill.id'), nullable=False)
 
-    def __repr__(self):
-        return f"<ApplicantSkill Applicant {self.applicant_id} - Skill {self.skill_id}>"
-
-# Route for the homepage
 @app.route('/')
-def homepage():
+def home():
     return render_template('homepage.html')
 
-# Route for employer registration
-@app.route('/register', methods=['POST'])
-def register():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id
+            session['role'] = user.role
+            
+            if user.role == 'applicant':
+                return redirect(url_for('applicant_dashboard'))
+            else:
+                return redirect(url_for('employer_dashboard'))
+        else:
+            flash('Invalid credentials!', 'danger')
+    
+    return render_template('login.html')
+
+@app.route('/applicant')
+def applicant_dashboard():
+    if 'user_id' in session and session['role'] == 'applicant':
+        return render_template('applicant_dashboard.html')
+    flash('Unauthorized access!', 'danger')
+    return redirect(url_for('login'))
+
+@app.route('/employer')
+def employer_dashboard():
+    if 'user_id' in session and session['role'] == 'employer':
+        return render_template('employer_dashboard.html')
+    flash('Unauthorized access!', 'danger')
+    return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully.', 'info')
+    return redirect(url_for('home'))
+
+# Applicant Registration
+@app.route('/register/applicant', methods=['GET', 'POST'])
+def register_applicant():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        password = generate_password_hash(request.form['password'])
+        dob = request.form['dob']
+        gender = request.form['gender']
+        address = request.form['address']
+        highest_qualification = request.form['highest_qualification']
+        field_of_study = request.form['field_of_study']
+        experience_years = request.form.get('experience_years', 0)
+
+        new_user = User(username=email, email=email, password=password, role='applicant', phone=phone)
+        db.session.add(new_user)
+        db.session.commit()
+
+        new_applicant = Applicant(user_id=new_user.id, dob=dob, gender=gender, address=address,
+                                  highest_qualification=highest_qualification, field_of_study=field_of_study,
+                                  experience_years=experience_years)
+        db.session.add(new_applicant)
+        db.session.commit()
+
+        flash('Registration successful!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('applicant_register.html')
+
+# Employer Registration
+@app.route('/register/employer', methods=['GET', 'POST'])
+def register_employer():
     if request.method == 'POST':
         company_name = request.form['company_name']
         industry = request.form['industry']
-        website = request.form['website']
         address = request.form['address']
-        fullname = request.form['fullname']
-        designation = request.form['designation']
         contact = request.form['contact']
         linkedin = request.form['linkedin']
         email = request.form['email']
-        password = generate_password_hash(request.form['login_password'])
+        password = generate_password_hash(request.form['password'])
 
-        new_employer = Employer(company_name=company_name, industry=industry, website=website, address=address, 
-                                fullname=fullname, designation=designation, contact=contact, linkedin=linkedin, 
-                                email=email, password=password)
-        
+        new_user = User(username=email, email=email, password=password, role='employer')
+        db.session.add(new_user)
+        db.session.commit()
+
+        new_employer = Employer(user_id=new_user.id, industry=industry, address=address, contact=contact, linkedin=linkedin)
         db.session.add(new_employer)
-        db.session.commit()  # Important to save changes
-        flash('Registration successful! Please log in.', 'success')
-        return redirect(url_for('homepage'))
-    
-    return redirect(url_for('homepage'))
+        db.session.commit()
 
-# Route for login
-@app.route('/login', methods=['POST'])
-def login():
-    email = request.form['email']
-    password = request.form['password']
-    user = Employer.query.filter_by(email=email).first()
-    
-    if user and check_password_hash(user.password, password):
-        session['user_id'] = user.id
-        flash('Login successful!', 'success')
-        return redirect(url_for('homepage'))
-    else:
-        flash('Invalid email or password', 'danger')
-        return redirect(url_for('homepage'))
+        flash('Employer registration successful!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register_employer.html')
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Ensure tables are created before running
+        db.create_all()
     app.run(debug=True)

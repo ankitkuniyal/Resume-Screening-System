@@ -9,15 +9,15 @@
   <body>
     <nav>
       <div class="nav__logo">
-        <a href="{{ url_for('homepage') }}">Resume Screening Platform</a>
+        <a href="{{ url_for('home') }}">Resume Screening Platform</a>
       </div>
       <ul class="nav__links">
-        <li class="link"><a href="{{ url_for('homepage') }}">Home</a></li>
+        <li class="link"><a href="{{ url_for('home') }}">Home</a></li>
         <li class="link"><a href="#">About</a></li>
         <li class="link"><a href="#">Services</a></li>
         <li class="link"><a href="#">Leaderboards</a></li>
         <li>
-          <a href="{{ url_for('login') }}"><button class="cta">Login/Register</button></a>
+            <a href="{{ url_for('login') }}"><button class="cta">Login/Register</button></a>
         </li>
       </ul>
     </nav>
@@ -31,7 +31,6 @@
         <p>
           Find the best candidates with ease. Streamline your hiring process and build a winning team effortlessly.
         </p>
-        <a href="{{ url_for('login') }}"><button class="cta">Get Started</button></a>
       </div>
     </section>
   </body>

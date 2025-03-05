@@ -10,30 +10,30 @@
     <div class="container">
       <header>Registration Form</header>
       <div class="form-outer">
-        <form>
+        <form action="{{ url_for('register_applicant') }}" method="POST">
           <div class="slide-page">
             <!-- Page 1: Personal Details -->
             <div class="page active">
               <div class="title">Personal Details:</div>
               <div class="field">
                 <div class="label">Full Name</div>
-                <input type="text" required />
+                <input type="text" name="name" required />
               </div>
               <div class="field">
                 <div class="label">Email Address</div>
-                <input type="email" required />
+                <input type="email" name="email" required />
               </div>
               <div class="field">
                 <div class="label">Mobile Number</div>
-                <input type="tel" required />
+                <input type="tel" name="phone" required />
               </div>
               <div class="field">
                 <div class="label">Date of Birth</div>
-                <input type="date" required />
+                <input type="date" name="dob" required />
               </div>
               <div class="field">
                 <div class="label">Gender</div>
-                <select required>
+                <select name="gender" required>
                   <option value="" disabled selected>Select gender</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
@@ -42,7 +42,7 @@
               </div>
               <div class="field">
                 <div class="label">Address</div>
-                <input type="text" required />
+                <input type="text" name="address" required />
               </div>
             </div>
 
@@ -51,7 +51,7 @@
               <div class="title">Educational Background:</div>
               <div class="field">
                 <div class="label">Highest Qualification</div>
-                <select required>
+                <select name="qualification" required>
                   <option value="" disabled selected>
                     Select your qualification
                   </option>
@@ -64,7 +64,7 @@
               </div>
               <div class="field">
                 <div class="label">Field Of Study</div>
-                <input type="text" required />
+                <input type="text" name="field_of_study" required />
               </div>
             </div>
 
@@ -73,7 +73,7 @@
               <div class="title">Work Experience:</div>
               <div class="field">
                 <div class="label">Years of Experience</div>
-                <select required>
+                <select name="experience_years" required>
                   <option value="" disabled selected>
                     Select Years of Experience
                   </option>
@@ -91,108 +91,21 @@
             <div class="page">
               <div class="title">Skills:</div>
               <div class="field checkbox-group">
-                <input type="checkbox" id="java" name="skills" value="Java" />
-                <label for="java">Java</label>
-
-                <input
-                  type="checkbox"
-                  id="python"
-                  name="skills"
-                  value="Python"
-                />
-                <label for="python">Python</label>
-
-                <input type="checkbox" id="sql" name="skills" value="SQL" />
-                <label for="sql">SQL</label>
-
-                <input type="checkbox" id="cpp" name="skills" value="C++" />
-                <label for="cpp">C++</label>
-
-                <input
-                  type="checkbox"
-                  id="javascript"
-                  name="skills"
-                  value="JavaScript"
-                />
-                <label for="javascript">JavaScript</label>
-
-                <input type="checkbox" id="csharp" name="skills" value="C#" />
-                <label for="csharp">C#</label>
-
-                <input type="checkbox" id="php" name="skills" value="PHP" />
-                <label for="php">PHP</label>
-
-                <input type="checkbox" id="ruby" name="skills" value="Ruby" />
-                <label for="ruby">Ruby</label>
-
-                <input type="checkbox" id="swift" name="skills" value="Swift" />
-                <label for="swift">Swift</label>
-
-                <input type="checkbox" id="go" name="skills" value="Go" />
-                <label for="go">Go</label>
-
-                <input
-                  type="checkbox"
-                  id="kotlin"
-                  name="skills"
-                  value="Kotlin"
-                />
-                <label for="kotlin">Kotlin</label>
-
-                <input
-                  type="checkbox"
-                  id="typescript"
-                  name="skills"
-                  value="TypeScript"
-                />
-                <label for="typescript">TypeScript</label>
-
-                <input type="checkbox" id="html" name="skills" value="HTML" />
-                <label for="html">HTML</label>
-
-                <input type="checkbox" id="css" name="skills" value="CSS" />
-                <label for="css">CSS</label>
-
-                <input type="checkbox" id="rust" name="skills" value="Rust" />
-                <label for="rust">Rust</label>
-
-                <input type="checkbox" id="scala" name="skills" value="Scala" />
-                <label for="scala">Scala</label>
-
-                <input type="checkbox" id="dart" name="skills" value="Dart" />
-                <label for="dart">Dart</label>
-
-                <input
-                  type="checkbox"
-                  id="elixir"
-                  name="skills"
-                  value="Elixir"
-                />
-                <label for="elixir">Elixir</label>
-
-                <input
-                  type="checkbox"
-                  id="haskell"
-                  name="skills"
-                  value="Haskell"
-                />
-                <label for="haskell">Haskell</label>
-
-                <input type="checkbox" id="r" name="skills" value="R" />
-                <label for="r">R</label>
-
-                <input
-                  type="checkbox"
-                  id="matlab"
-                  name="skills"
-                  value="MATLAB"
-                />
-                <label for="matlab">MATLAB</label>
+                <label><input type="checkbox" name="skills" value="Java" /> Java</label>
+                <label><input type="checkbox" name="skills" value="Python" /> Python</label>
+                <label><input type="checkbox" name="skills" value="SQL" /> SQL</label>
+                <label><input type="checkbox" name="skills" value="C++" /> C++</label>
+                <label><input type="checkbox" name="skills" value="JavaScript" /> JavaScript</label>
+                <label><input type="checkbox" name="skills" value="C#" /> C#</label>
+                <label><input type="checkbox" name="skills" value="PHP" /> PHP</label>
+                <label><input type="checkbox" name="skills" value="Ruby" /> Ruby</label>
+                <label><input type="checkbox" name="skills" value="Swift" /> Swift</label>
+                <label><input type="checkbox" name="skills" value="Go" /> Go</label>
               </div>
             </div>
           </div>
 
-          <!--Login information-->
+          <!--Login Information-->
           <div class="title">Login Information:</div>
           <div class="field">
             <div class="label">Email Address</div>
@@ -201,20 +114,29 @@
 
           <div class="field">
             <div class="label">Password</div>
-            <input type="password" name="login_password" required />
+            <input type="password" name="password" id="password" required />
           </div>
           <div class="field">
             <div class="label">Confirm Password</div>
-            <input type="password" name="confirm_password" required />
+            <input type="password" name="confirm_password" id="confirm_password" required />
           </div>
-         
 
           <div class="field btns">
-            <button type="submit" class="submit">SUBMIT</button>
+            <button type="submit" class="submit" onclick="return validateForm()">SUBMIT</button>
           </div>
         </form>
       </div>
     </div>
-    <script src="static/js/app_register.js"></script>
+    <script>
+      function validateForm() {
+        let password = document.getElementById("password").value;
+        let confirm_password = document.getElementById("confirm_password").value;
+        if (password !== confirm_password) {
+          alert("Passwords do not match!");
+          return false;
+        }
+        return true;
+      }
+    </script>
   </body>
 </html>
