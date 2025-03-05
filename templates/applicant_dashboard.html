@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block styles %}
+<link rel="stylesheet" href="static/css/applicant_dashboard.css">
+{% endblock %}
+{% block content %}
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li>Dashboard</li>
+            <li>Profile</li>
+            <li>Applied Jobs</li>
+            <li>Recommended Jobs</li>
+            <li>Saved Jobs</li>
+            <li>Notifications</li>
+            <li>Settings</li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="topbar">
+            <h2>Applicant Dashboard</h2>
+            <button class="button">Logout</button>
+        </div>
+
+        <div class="profile-summary card">
+            <h3>Profile Summary</h3>
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Skills:</strong> Python, JavaScript, React</p>
+            <p><strong>Resume:</strong> <a href="#">Download</a></p>
+            <button class="button">Edit Profile</button>
+        </div>
+
+        <h3>Applied Jobs</h3>
+        <div class="card">
+            <p><strong>Job Title:</strong> Software Developer</p>
+            <p><strong>Company:</strong> ABC Corp</p>
+            <p><strong>Status:</strong> Under Review</p>
+        </div>
+
+        <h3>Recommended Jobs</h3>
+        <div class="card">
+            <p><strong>Job Title:</strong> Frontend Developer</p>
+            <p><strong>Company:</strong> XYZ Ltd</p>
+            <button class="button">Apply Now</button>
+        </div>
+
+        <h3>Saved Jobs</h3>
+        <div class="card">
+            <p><strong>Job Title:</strong> Data Analyst</p>
+            <p><strong>Company:</strong> Tech Solutions</p>
+            <button class="button">Apply Now</button>
+        </div>
+
+        <h3>Notifications</h3>
+        <div class="card">
+            <p>You have been shortlisted for the Software Developer role at ABC Corp.</p>
+        </div>
+    </div>
+{% endblock %}

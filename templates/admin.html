@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    
+    <h2>Users</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Employers</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Industry</th>
+            <th>Contact</th>
+            <th>Address</th>
+        </tr>
+        {% for employer in employers %}
+        <tr>
+            <td>{{ employer.id }}</td>
+            <td>{{ employer.industry }}</td>
+            <td>{{ employer.contact }}</td>
+            <td>{{ employer.address }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Jobs</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Job Type</th>
+        </tr>
+        {% for job in jobs %}
+        <tr>
+            <td>{{ job.id }}</td>
+            <td>{{ job.job_title }}</td>
+            <td>{{ job.company }}</td>
+            <td>{{ job.location }}</td>
+            <td>{{ job.job_type }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Applicants</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>DOB</th>
+            <th>Gender</th>
+            <th>Address</th>
+            <th>Qualification</th>
+        </tr>
+        {% for applicant in applicants %}
+        <tr>
+            <td>{{ applicant.id }}</td>
+            <td>{{ applicant.dob }}</td>
+            <td>{{ applicant.gender }}</td>
+            <td>{{ applicant.address }}</td>
+            <td>{{ applicant.highest_qualification }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
