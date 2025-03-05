@@ -1,109 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Employer Registration & Login</title>
-    <link rel="stylesheet" href="/static/css/employer_register.css" />
-  </head>
-  <body>
-    <div class="container">
-      <!-- Registration Form -->
-      <header>Employer Registration</header>
-      <div class="form-outer">
-        <form action="register_employer.php" method="POST" enctype="multipart/form-data">
-          <div class="slide-page">
-            <!-- Page 1: Company Details -->
-            <div class="page active">
-              <div class="title">Company Details:</div>
-              <div class="field">
-                <div class="label">Company Name</div>
-                <input type="text" name="company_name" required />
-              </div>
-              <div class="field">
-                <div class="label">Industry Type</div>
-                <select name="industry" required>
-                  <option value="" disabled selected>Select Industry</option>
-                  <option value="IT">IT</option>
-                  <option value="Finance">Finance</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Education">Education</option>
-                </select>
-              </div>
-              <div class="field">
-                <div class="label">Company Website</div>
-                <input type="url" name="website" />
-              </div>
-              <div class="field">
-                <div class="label">Company Address</div>
-                <input type="text" name="address" required />
-              </div>
-            </div>
+{% extends 'base.html' %}
 
-            <!-- Page 2: Representative Details -->
-            <div class="page">
-              <div class="title">Representative Details:</div>
-              <div class="field">
-                <div class="label">Full Name</div>
-                <input type="text" name="fullname" required />
-              </div>
-              <div class="field">
-                <div class="label">Designation</div>
-                <input type="text" name="designation" required />
-              </div>
-              <div class="field">
-                <div class="label">Contact Number</div>
-                <input type="tel" name="contact" pattern="[0-9]{10}" required />
-              </div>
-              
-            </div>
-
-           
-
-            <!-- Page 4: Additional Information -->
-            <div class="page">
-              <div class="title">Additional Information:</div>
-              <div class="field">
-                <div class="label">Company Logo (Optional)</div>
-                <input type="file" name="logo" accept="image/*" />
-              </div>
-              <div class="field">
-                <div class="label">LinkedIn Profile</div>
-                <input type="url" name="linkedin" />
-              </div>
-
-              <!--Login information-->
-              <div class="title">Login Information:</div>
-              <div class="field">
-                <div class="label">Email Address</div>
-                <input type="email" name="email" required />
-              </div>
-
-              <div class="field">
-                <div class="label">Password</div>
-                <input type="password" name="login_password" required />
-              </div>
-              <div class="field">
-                <div class="label">Confirm Password</div>
-                <input type="password" name="confirm_password" required />
-              </div>
-              
-              <div class="field checkbox-group">
-                <input type="checkbox" name="terms" required />
-                <label>I agree to the Terms & Conditions</label>
-              </div>
-            </div>
+{% block title %}Employer Registration & Login{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="static/css/employer_register.css">
+{% endblock %}
+{% block content %}
+<div class="container">
+  <header>Employer Registration</header>
+  <div class="form-outer">
+    <form action="{{ url_for('register_employer') }}" method="POST" enctype="multipart/form-data">
+      <div class="slide-page">
+        <!-- Page 1: Company Details -->
+        <div class="page active">
+          <div class="title">Company Details:</div>
+          <div class="field">
+            <div class="label">Company Name</div>
+            <input type="text" name="company_name" required />
           </div>
-
-          <div class="field btns">
-            <button type="submit" class="submit">REGISTER</button>
+          <div class="field">
+            <div class="label">Industry Type</div>
+            <select name="industry" required>
+              <option value="" disabled selected>Select Industry</option>
+              <option value="IT">IT</option>
+              <option value="Finance">Finance</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Education">Education</option>
+            </select>
           </div>
-        </form>
+          <div class="field">
+            <div class="label">Company Website</div>
+            <input type="url" name="website" />
+          </div>
+          <div class="field">
+            <div class="label">Company Address</div>
+            <input type="text" name="address" required />
+          </div>
+        </div>
+
+        <!-- Page 2: Representative Details -->
+        <div class="page">
+          <div class="title">Representative Details:</div>
+          <div class="field">
+            <div class="label">Full Name</div>
+            <input type="text" name="fullname" required />
+          </div>
+          <div class="field">
+            <div class="label">Designation</div>
+            <input type="text" name="designation" required />
+          </div>
+          <div class="field">
+            <div class="label">Contact Number</div>
+            <input type="tel" name="contact" pattern="[0-9]{10}" required />
+          </div>
+        </div>
+
+        <!-- Page 3: Additional Information -->
+        <div class="page">
+          <div class="title">Additional Information:</div>
+          <div class="field">
+            <div class="label">Company Logo (Optional)</div>
+            <input type="file" name="logo" accept="image/*" />
+          </div>
+          <div class="field">
+            <div class="label">LinkedIn Profile</div>
+            <input type="url" name="linkedin" />
+          </div>
+          <div class="title">Login Information:</div>
+          <div class="field">
+            <div class="label">Email Address</div>
+            <input type="email" name="email" required />
+          </div>
+          <div class="field">
+            <div class="label">Password</div>
+            <input type="password" name="login_password" required />
+          </div>
+          <div class="field">
+            <div class="label">Confirm Password</div>
+            <input type="password" name="confirm_password" required />
+          </div>
+          <div class="field checkbox-group">
+            <input type="checkbox" name="terms" required />
+            <label>I agree to the Terms & Conditions</label>
+          </div>
+        </div>
       </div>
 
-      
-    </div>
+      <div class="field btns">
+        <button type="submit" class="submit">REGISTER</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <script src="/static/js/employer_register.js"></script>
-  </body>
-</html>
+<script src="{{ url_for('static', filename='js/employer_register.js') }}"></script>
+{% endblock %}
