@@ -19,14 +19,15 @@ class User(db.Model):
     email = db.Column(db.String(150), nullable=False, unique=True)
     phone = db.Column(db.String(15), nullable=True)  # For applicants
     password = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.Enum('applicant', 'employer', name='user_roles'), nullable=False)
-    company_name = db.Column(db.String(100), nullable=True)  # For employer
-    designation = db.Column(db.String(50), nullable=True)  # For employer
+    role = db.Column(db.Enum('admin', 'applicant', 'employer', name='user_roles'), nullable=False)
+
+    employer = db.relationship('Employer', backref='user', uselist=False)
+    applicant = db.relationship('Applicant', backref='user', uselist=False)
 
 # Employer Model
 class Employer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
     industry = db.Column(db.String(50), nullable=False)
     website = db.Column(db.String(255), nullable=True)
     address = db.Column(db.String(255), nullable=False)
@@ -50,7 +51,7 @@ class Job(db.Model):
 # Applicant Model
 class Applicant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
     dob = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     address = db.Column(db.String(255), nullable=False)
@@ -89,8 +90,10 @@ def login():
             
             if user.role == 'applicant':
                 return redirect(url_for('applicant_dashboard'))
-            else:
+            elif user.role == 'employer':
                 return redirect(url_for('employer_dashboard'))
+            elif user.role == 'admin':
+                return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid credentials!', 'danger')
     
@@ -110,6 +113,18 @@ def employer_dashboard():
     flash('Unauthorized access!', 'danger')
     return redirect(url_for('login'))
 
+@app.route('/admin')
+def admin_dashboard():
+    if 'user_id' in session and session['role'] == 'admin':
+        users = User.query.all()
+        employers = Employer.query.all()
+        jobs = Job.query.all()
+        applicants = Applicant.query.all()
+        return render_template('admin.html', users=users, employers=employers, jobs=jobs, applicants=applicants)
+
+    flash('Unauthorized access!', 'danger')
+    return redirect(url_for('login'))
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -120,7 +135,6 @@ def logout():
 @app.route('/register/applicant', methods=['GET', 'POST'])
 def register_applicant():
     if request.method == 'POST':
-        name = request.form['name']
         email = request.form['email']
         phone = request.form['phone']
         password = generate_password_hash(request.form['password'])
@@ -131,7 +145,7 @@ def register_applicant():
         field_of_study = request.form['field_of_study']
         experience_years = request.form.get('experience_years', 0)
 
-        new_user = User(username=email, email=email, password=password, role='applicant', phone=phone)
+        new_user = User(username=email, email=email, phone=phone, password=password, role='applicant')
         db.session.add(new_user)
         db.session.commit()
 
@@ -150,12 +164,11 @@ def register_applicant():
 @app.route('/register/employer', methods=['GET', 'POST'])
 def register_employer():
     if request.method == 'POST':
-        company_name = request.form['company_name']
+        email = request.form['email']
         industry = request.form['industry']
         address = request.form['address']
         contact = request.form['contact']
         linkedin = request.form['linkedin']
-        email = request.form['email']
         password = generate_password_hash(request.form['password'])
 
         new_user = User(username=email, email=email, password=password, role='employer')
@@ -174,4 +187,4 @@ def register_employer():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, port=3000)

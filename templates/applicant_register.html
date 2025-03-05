@@ -1,142 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Applicant Registration Form</title>
-    <link rel="stylesheet" href="/static/css/applicant_register.css" />
-  </head>
-  <body>
-    <div class="container">
-      <header>Registration Form</header>
-      <div class="form-outer">
-        <form action="{{ url_for('register_applicant') }}" method="POST">
-          <div class="slide-page">
-            <!-- Page 1: Personal Details -->
-            <div class="page active">
-              <div class="title">Personal Details:</div>
-              <div class="field">
-                <div class="label">Full Name</div>
-                <input type="text" name="name" required />
-              </div>
-              <div class="field">
-                <div class="label">Email Address</div>
-                <input type="email" name="email" required />
-              </div>
-              <div class="field">
-                <div class="label">Mobile Number</div>
-                <input type="tel" name="phone" required />
-              </div>
-              <div class="field">
-                <div class="label">Date of Birth</div>
-                <input type="date" name="dob" required />
-              </div>
-              <div class="field">
-                <div class="label">Gender</div>
-                <select name="gender" required>
-                  <option value="" disabled selected>Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div class="field">
-                <div class="label">Address</div>
-                <input type="text" name="address" required />
-              </div>
-            </div>
+{% extends 'base.html' %}
 
-            <!-- Page 2: Educational Background -->
-            <div class="page">
-              <div class="title">Educational Background:</div>
-              <div class="field">
-                <div class="label">Highest Qualification</div>
-                <select name="qualification" required>
-                  <option value="" disabled selected>
-                    Select your qualification
-                  </option>
-                  <option value="High School">High School</option>
-                  <option value="Diploma">Diploma</option>
-                  <option value="Bachelor's">Bachelor's</option>
-                  <option value="Master's">Master's</option>
-                  <option value="PhD">PhD</option>
-                </select>
-              </div>
-              <div class="field">
-                <div class="label">Field Of Study</div>
-                <input type="text" name="field_of_study" required />
-              </div>
-            </div>
+{% block title %}Applicant Registration Form{% endblock %}
 
-            <!-- Page 3: Work Experience -->
-            <div class="page">
-              <div class="title">Work Experience:</div>
-              <div class="field">
-                <div class="label">Years of Experience</div>
-                <select name="experience_years" required>
-                  <option value="" disabled selected>
-                    Select Years of Experience
-                  </option>
-                  <option value="0">0 (Fresher)</option>
-                  <option value="1">1 Year</option>
-                  <option value="2">2 Years</option>
-                  <option value="3">3 Years</option>
-                  <option value="4">4 Years</option>
-                  <option value="5">5+ Years</option>
-                </select>
-              </div>
-            </div>
+{% block content %}
+<link rel="stylesheet" href="/static/css/applicant_register.css" />
 
-            <!-- Page 4: Skills -->
-            <div class="page">
-              <div class="title">Skills:</div>
-              <div class="field checkbox-group">
-                <label><input type="checkbox" name="skills" value="Java" /> Java</label>
-                <label><input type="checkbox" name="skills" value="Python" /> Python</label>
-                <label><input type="checkbox" name="skills" value="SQL" /> SQL</label>
-                <label><input type="checkbox" name="skills" value="C++" /> C++</label>
-                <label><input type="checkbox" name="skills" value="JavaScript" /> JavaScript</label>
-                <label><input type="checkbox" name="skills" value="C#" /> C#</label>
-                <label><input type="checkbox" name="skills" value="PHP" /> PHP</label>
-                <label><input type="checkbox" name="skills" value="Ruby" /> Ruby</label>
-                <label><input type="checkbox" name="skills" value="Swift" /> Swift</label>
-                <label><input type="checkbox" name="skills" value="Go" /> Go</label>
-              </div>
-            </div>
+<div class="container">
+  <header>Registration Form</header>
+  <div class="form-outer">
+    <form action="{{ url_for('register_applicant') }}" method="POST">
+      <div class="slide-page">
+        <!-- Page 1: Personal Details -->
+        <div class="page active">
+          <div class="title">Personal Details:</div>
+          <div class="field">
+            <div class="label">Full Name</div>
+            <input type="text" name="name" required />
           </div>
-
-          <!--Login Information-->
-          <div class="title">Login Information:</div>
           <div class="field">
             <div class="label">Email Address</div>
             <input type="email" name="email" required />
           </div>
-
           <div class="field">
-            <div class="label">Password</div>
-            <input type="password" name="password" id="password" required />
+            <div class="label">Mobile Number</div>
+            <input type="tel" name="phone" required />
           </div>
           <div class="field">
-            <div class="label">Confirm Password</div>
-            <input type="password" name="confirm_password" id="confirm_password" required />
+            <div class="label">Date of Birth</div>
+            <input type="date" name="dob" required />
           </div>
+          <div class="field">
+            <div class="label">Gender</div>
+            <select name="gender" required>
+              <option value="" disabled selected>Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="label">Address</div>
+            <input type="text" name="address" required />
+          </div>
+        </div>
 
-          <div class="field btns">
-            <button type="submit" class="submit" onclick="return validateForm()">SUBMIT</button>
+        <!-- Page 2: Educational Background -->
+        <div class="page">
+          <div class="title">Educational Background:</div>
+          <div class="field">
+            <div class="label">Highest Qualification</div>
+            <select name="highest_qualification" required>
+              <option value="" disabled selected>Select your qualification</option>
+              <option value="High School">High School</option>
+              <option value="Diploma">Diploma</option>
+              <option value="Bachelor's">Bachelor's</option>
+              <option value="Master's">Master's</option>
+              <option value="PhD">PhD</option>
+            </select>
           </div>
-        </form>
+          <div class="field">
+            <div class="label">Field Of Study</div>
+            <input type="text" name="field_of_study" required />
+          </div>
+        </div>
+
+        <!-- Page 3: Work Experience -->
+        <div class="page">
+          <div class="title">Work Experience:</div>
+          <div class="field">
+            <div class="label">Years of Experience</div>
+            <select name="experience_years" required>
+              <option value="" disabled selected>Select Years of Experience</option>
+              <option value="0">0 (Fresher)</option>
+              <option value="1">1 Year</option>
+              <option value="2">2 Years</option>
+              <option value="3">3 Years</option>
+              <option value="4">4 Years</option>
+              <option value="5">5+ Years</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Page 4: Skills -->
+        <div class="page">
+          <div class="title">Skills:</div>
+          <div class="field checkbox-group">
+            <label><input type="checkbox" name="skills" value="Java" /> Java</label>
+            <label><input type="checkbox" name="skills" value="Python" /> Python</label>
+            <label><input type="checkbox" name="skills" value="SQL" /> SQL</label>
+            <label><input type="checkbox" name="skills" value="C++" /> C++</label>
+            <label><input type="checkbox" name="skills" value="JavaScript" /> JavaScript</label>
+            <label><input type="checkbox" name="skills" value="C#" /> C#</label>
+            <label><input type="checkbox" name="skills" value="PHP" /> PHP</label>
+            <label><input type="checkbox" name="skills" value="Ruby" /> Ruby</label>
+            <label><input type="checkbox" name="skills" value="Swift" /> Swift</label>
+            <label><input type="checkbox" name="skills" value="Go" /> Go</label>
+          </div>
+        </div>
       </div>
-    </div>
-    <script>
-      function validateForm() {
-        let password = document.getElementById("password").value;
-        let confirm_password = document.getElementById("confirm_password").value;
-        if (password !== confirm_password) {
-          alert("Passwords do not match!");
-          return false;
-        }
-        return true;
-      }
-    </script>
-  </body>
-</html>
+
+      <!--Login Information-->
+      <div class="title">Login Information:</div>
+      <div class="field">
+        <div class="label">Email Address</div>
+        <input type="email" name="email" required />
+      </div>
+
+      <div class="field">
+        <div class="label">Password</div>
+        <input type="password" name="password" id="password" required />
+      </div>
+      <div class="field">
+        <div class="label">Confirm Password</div>
+        <input type="password" name="confirm_password" id="confirm_password" required />
+      </div>
+
+      <div class="field btns">
+        <button type="submit" class="submit" onclick="return validateForm()">SUBMIT</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function validateForm() {
+    let password = document.getElementById("password").value;
+    let confirm_password = document.getElementById("confirm_password").value;
+    if (password !== confirm_password) {
+      alert("Passwords do not match!");
+      return false;
+    }
+    return true;
+  }
+</script>
+{% endblock %}
