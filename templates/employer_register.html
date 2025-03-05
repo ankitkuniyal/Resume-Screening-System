@@ -38,60 +38,70 @@
           </div>
         </div>
 
-        <!-- Page 2: Representative Details -->
-        <div class="page">
-          <div class="title">Representative Details:</div>
-          <div class="field">
-            <div class="label">Full Name</div>
-            <input type="text" name="fullname" required />
-          </div>
-          <div class="field">
-            <div class="label">Designation</div>
-            <input type="text" name="designation" required />
-          </div>
-          <div class="field">
-            <div class="label">Contact Number</div>
-            <input type="tel" name="contact" pattern="[0-9]{10}" required />
-          </div>
-        </div>
+            <!-- Page 2: Representative Details -->
+            <div class="page">
+              <div class="title">Representative Details:</div>
+              <div class="field">
+                <div class="label">Full Name</div>
+                <input type="text" name="fullname" required />
+              </div>
+              <div class="field">
+                <div class="label">Designation</div>
+                <input type="text" name="designation" required />
+              </div>
+              <div class="field">
+                <div class="label">Contact Number</div>
+                <input type="tel" name="contact" pattern="[0-9]{10}" required />
+              </div>
+              
+            </div>
 
-        <!-- Page 3: Additional Information -->
-        <div class="page">
-          <div class="title">Additional Information:</div>
-          <div class="field">
-            <div class="label">Company Logo (Optional)</div>
-            <input type="file" name="logo" accept="image/*" />
+           
+
+            <!-- Page 4: Additional Information -->
+            <div class="page">
+              <div class="title">Additional Information:</div>
+              <div class="field">
+                <div class="label">Company Logo (Optional)</div>
+                <input type="file" name="logo" accept="image/*" />
+              </div>
+              <div class="field">
+                <div class="label">LinkedIn Profile</div>
+                <input type="url" name="linkedin" />
+              </div>
+
+              <!--Login information-->
+              <div class="title">Login Information:</div>
+              <div class="field">
+                <div class="label">Email Address</div>
+                <input type="email" name="email" required />
+              </div>
+
+              <div class="field">
+                <div class="label">Password</div>
+                <input type="password" name="login_password" required />
+              </div>
+              <div class="field">
+                <div class="label">Confirm Password</div>
+                <input type="password" name="confirm_password" required />
+              </div>
+              
+              <div class="field checkbox-group">
+                <input type="checkbox" name="terms" required />
+                <label>I agree to the Terms & Conditions</label>
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <div class="label">LinkedIn Profile</div>
-            <input type="url" name="linkedin" />
+
+          <div class="field btns">
+            <button type="submit" class="submit">REGISTER</button>
           </div>
-          <div class="title">Login Information:</div>
-          <div class="field">
-            <div class="label">Email Address</div>
-            <input type="email" name="email" required />
-          </div>
-          <div class="field">
-            <div class="label">Password</div>
-            <input type="password" name="login_password" required />
-          </div>
-          <div class="field">
-            <div class="label">Confirm Password</div>
-            <input type="password" name="confirm_password" required />
-          </div>
-          <div class="field checkbox-group">
-            <input type="checkbox" name="terms" required />
-            <label>I agree to the Terms & Conditions</label>
-          </div>
-        </div>
+        </form>
       </div>
 
-      <div class="field btns">
-        <button type="submit" class="submit">REGISTER</button>
-      </div>
-    </form>
-  </div>
-</div>
+      
+    </div>
 
-<script src="{{ url_for('static', filename='js/employer_register.js') }}"></script>
-{% endblock %}
+    <script src="/static/js/employer_register.js"></script>
+  </body>
+</html>
