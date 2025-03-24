@@ -1,136 +1,261 @@
 {% extends 'base.html' %}
-
 {% block title %}Applicant Registration Form{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../static/css/applicant_register.css">
+{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="/static/css/applicant_register.css" />
-
 <div class="container">
-  <header>Registration Form</header>
-  <div class="form-outer">
-    <form action="{{ url_for('register_applicant') }}" method="POST">
-      <div class="slide-page">
-        <!-- Page 1: Personal Details -->
-        <div class="page active">
-          <div class="title">Personal Details:</div>
-          <div class="field">
-            <div class="label">Full Name</div>
-            <input type="text" name="name" required />
-          </div>
-          <div class="field">
-            <div class="label">Email Address</div>
-            <input type="email" name="email" required />
-          </div>
-          <div class="field">
-            <div class="label">Mobile Number</div>
-            <input type="tel" name="phone" required />
-          </div>
-          <div class="field">
-            <div class="label">Date of Birth</div>
-            <input type="date" name="dob" required />
-          </div>
-          <div class="field">
-            <div class="label">Gender</div>
-            <select name="gender" required>
-              <option value="" disabled selected>Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <div class="label">Address</div>
-            <input type="text" name="address" required />
-          </div>
+    <header>Applicant Registration</header>
+    
+    <div class="form-outer">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1">
+                1
+                <span class="progress-label">Personal Details</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                2
+                <span class="progress-label">Education</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                3
+                <span class="progress-label">Experience</span>
+            </div>
+            <div class="progress-step" data-step="4">
+                4
+                <span class="progress-label">Skills & Login</span>
+            </div>
         </div>
-
-        <!-- Page 2: Educational Background -->
-        <div class="page">
-          <div class="title">Educational Background:</div>
-          <div class="field">
-            <div class="label">Highest Qualification</div>
-            <select name="highest_qualification" required>
-              <option value="" disabled selected>Select your qualification</option>
-              <option value="High School">High School</option>
-              <option value="Diploma">Diploma</option>
-              <option value="Bachelor's">Bachelor's</option>
-              <option value="Master's">Master's</option>
-              <option value="PhD">PhD</option>
-            </select>
-          </div>
-          <div class="field">
-            <div class="label">Field Of Study</div>
-            <input type="text" name="field_of_study" required />
-          </div>
-        </div>
-
-        <!-- Page 3: Work Experience -->
-        <div class="page">
-          <div class="title">Work Experience:</div>
-          <div class="field">
-            <div class="label">Years of Experience</div>
-            <select name="experience_years" required>
-              <option value="" disabled selected>Select Years of Experience</option>
-              <option value="0">0 (Fresher)</option>
-              <option value="1">1 Year</option>
-              <option value="2">2 Years</option>
-              <option value="3">3 Years</option>
-              <option value="4">4 Years</option>
-              <option value="5">5+ Years</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Page 4: Skills -->
-        <div class="page">
-          <div class="title">Skills:</div>
-          <div class="field checkbox-group">
-            <label><input type="checkbox" name="skills" value="Java" /> Java</label>
-            <label><input type="checkbox" name="skills" value="Python" /> Python</label>
-            <label><input type="checkbox" name="skills" value="SQL" /> SQL</label>
-            <label><input type="checkbox" name="skills" value="C++" /> C++</label>
-            <label><input type="checkbox" name="skills" value="JavaScript" /> JavaScript</label>
-            <label><input type="checkbox" name="skills" value="C#" /> C#</label>
-            <label><input type="checkbox" name="skills" value="PHP" /> PHP</label>
-            <label><input type="checkbox" name="skills" value="Ruby" /> Ruby</label>
-            <label><input type="checkbox" name="skills" value="Swift" /> Swift</label>
-            <label><input type="checkbox" name="skills" value="Go" /> Go</label>
-          </div>
-        </div>
-      </div>
-
-      <!--Login Information-->
-      <div class="title">Login Information:</div>
-      <div class="field">
-        <div class="label">Email Address</div>
-        <input type="email" name="email" required />
-      </div>
-
-      <div class="field">
-        <div class="label">Password</div>
-        <input type="password" name="password" id="password" required />
-      </div>
-      <div class="field">
-        <div class="label">Confirm Password</div>
-        <input type="password" name="confirm_password" id="confirm_password" required />
-      </div>
-
-      <div class="field btns">
-        <button type="submit" class="submit" onclick="return validateForm()">SUBMIT</button>
-      </div>
-    </form>
-  </div>
+        
+        <form action="{{ url_for('register_applicant') }}" method="POST" id="registration-form">
+            <div class="form-content">
+                <!-- Page 1: Personal Details -->
+                <div class="page active" data-page="1">
+                    <div class="title">Personal Details</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Full Name</div>
+                            <input type="text" name="name" required placeholder="Enter your full name" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Email Address</div>
+                            <input type="email" name="email" required placeholder="Enter your email address" />
+                        </div>
+                    </div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Mobile Number</div>
+                            <input type="tel" name="phone" required placeholder="Enter your mobile number" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Date of Birth</div>
+                            <input type="date" name="dob" required />
+                        </div>
+                    </div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Gender</div>
+                            <select name="gender" required>
+                                <option value="" disabled selected>Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Address</div>
+                            <input type="text" name="address" required placeholder="Enter your full address" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-next">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Page 2: Educational Background -->
+                <div class="page" data-page="2">
+                    <div class="title">Educational Background</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Highest Qualification</div>
+                            <select name="highest_qualification" required>
+                                <option value="" disabled selected>Select your qualification</option>
+                                <option value="High School">High School</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Bachelor's">Bachelor's</option>
+                                <option value="Master's">Master's</option>
+                                <option value="PhD">PhD</option>
+                            </select>
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Field Of Study</div>
+                            <input type="text" name="field_of_study" required placeholder="Your major or specialization" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev">Previous</button>
+                        <button type="button" class="btn-next">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Page 3: Work Experience -->
+                <div class="page" data-page="3">
+                    <div class="title">Work Experience</div>
+                    
+                    <div class="field">
+                        <div class="label">Years of Experience</div>
+                        <select name="experience_years" required>
+                            <option value="" disabled selected>Select Years of Experience</option>
+                            <option value="0">0 (Fresher)</option>
+                            <option value="1">1 Year</option>
+                            <option value="2">2 Years</option>
+                            <option value="3">3 Years</option>
+                            <option value="4">4 Years</option>
+                            <option value="5">5+ Years</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev">Previous</button>
+                        <button type="button" class="btn-next">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Page 4: Skills and Login -->
+                <div class="page" data-page="4">
+                    <div class="title">Skills</div>
+                    <div class="field">
+                        <div class="label">Select Your Skills</div>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="skills" value="Java" /> Java</label>
+                            <label><input type="checkbox" name="skills" value="Python" /> Python</label>
+                            <label><input type="checkbox" name="skills" value="SQL" /> SQL</label>
+                            <label><input type="checkbox" name="skills" value="C++" /> C++</label>
+                            <label><input type="checkbox" name="skills" value="JavaScript" /> JavaScript</label>
+                            <label><input type="checkbox" name="skills" value="C#" /> C#</label>
+                            <label><input type="checkbox" name="skills" value="PHP" /> PHP</label>
+                            <label><input type="checkbox" name="skills" value="Ruby" /> Ruby</label>
+                            <label><input type="checkbox" name="skills" value="Swift" /> Swift</label>
+                            <label><input type="checkbox" name="skills" value="Go" /> Go</label>
+                        </div>
+                    </div>
+                    
+                    <div class="title">Login Information</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Email Address</div>
+                            <input type="email" name="login_email" required placeholder="Enter your email address" />
+                            <small style="display: block; margin-top: 5px; color: #666;">This will be used for login. Make sure it matches your contact email.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Password</div>
+                            <input type="password" name="password" id="password" required placeholder="Create a strong password" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Confirm Password</div>
+                            <input type="password" name="confirm_password" id="confirm_password" required placeholder="Confirm your password" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev">Previous</button>
+                        <button type="submit" class="submit">Register</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-  function validateForm() {
-    let password = document.getElementById("password").value;
-    let confirm_password = document.getElementById("confirm_password").value;
-    if (password !== confirm_password) {
-      alert("Passwords do not match!");
-      return false;
-    }
-    return true;
-  }
+document.addEventListener('DOMContentLoaded', function() {
+    const pages = document.querySelectorAll('.page');
+    const nextBtns = document.querySelectorAll('.btn-next');
+    const prevBtns = document.querySelectorAll('.btn-prev');
+    const progressSteps = document.querySelectorAll('.progress-step');
+    
+    // Next button event listeners
+    nextBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const currentPage = document.querySelector('.page.active');
+            const currentStepNum = parseInt(currentPage.dataset.page);
+            const nextStepNum = currentStepNum + 1;
+            
+            // Validate current page fields
+            const inputs = currentPage.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value) {
+                    input.style.borderColor = 'red';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) return;
+            
+            // Proceed to next page
+            currentPage.classList.remove('active');
+            const nextPage = document.querySelector(`.page[data-page="${nextStepNum}"]`);
+            nextPage.classList.add('active');
+            
+            // Update progress bar
+            progressSteps[currentStepNum - 1].classList.add('completed');
+            progressSteps[nextStepNum - 1].classList.add('active');
+        });
+    });
+    
+    // Previous button event listeners
+    prevBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const currentPage = document.querySelector('.page.active');
+            const currentStepNum = parseInt(currentPage.dataset.page);
+            const prevStepNum = currentStepNum - 1;
+            
+            // Go back to previous page
+            currentPage.classList.remove('active');
+            const prevPage = document.querySelector(`.page[data-page="${prevStepNum}"]`);
+            prevPage.classList.add('active');
+            
+            // Update progress bar
+            progressSteps[currentStepNum - 1].classList.remove('active');
+            progressSteps[prevStepNum - 1].classList.remove('completed');
+            progressSteps[prevStepNum - 1].classList.add('active');
+        });
+    });
+    
+    // Form validation on submit
+    const form = document.getElementById('registration-form');
+    form.addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            document.getElementById('confirm_password').style.borderColor = 'red';
+            alert('Passwords do not match!');
+        }
+    });
+});
 </script>
 {% endblock %}

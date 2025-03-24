@@ -148,6 +148,12 @@ def register_applicant():
         field_of_study = request.form['field_of_study']
         experience_years = request.form.get('experience_years', 0)
 
+        # Check if the email already exists
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already exists. Please use a different email.', 'danger')
+            return redirect(url_for('register_applicant'))
+
         new_user = User(username=email, email=email, phone=phone, password=password, role='applicant')
         db.session.add(new_user)
         db.session.commit()
@@ -190,4 +196,4 @@ def register_employer():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True,port=3200)
+    app.run(debug=True,port=3000)
