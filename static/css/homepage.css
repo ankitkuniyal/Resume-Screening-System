@@ -35,7 +35,6 @@ nav {
   font-size: 1.5rem;
   font-weight: 500;
   color: var(--primary-color-dark);
-  text-decoration: none;
   transition: 0.3s;
 }
 
@@ -51,7 +50,6 @@ nav {
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-color);
-  text-decoration: none;
   transition: 0.3s;
 }
 
