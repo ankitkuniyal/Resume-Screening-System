@@ -1,106 +1,228 @@
 {% extends 'base.html' %}
-
 {% block title %}Employer Registration & Login{% endblock %}
 {% block styles %}
-<link rel="stylesheet" href="static/css/employer_register.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../static/css/employer_register.css">
 {% endblock %}
+
 {% block content %}
 <div class="container">
-  <header>Employer Registration</header>
-  <div class="form-outer">
-    <form action="{{ url_for('register_employer') }}" method="POST" enctype="multipart/form-data">
-      <div class="slide-page">
-        <!-- Page 1: Company Details -->
-        <div class="page active">
-          <div class="title">Company Details:</div>
-          <div class="field">
-            <div class="label">Company Name</div>
-            <input type="text" name="company_name" required />
-          </div>
-          <div class="field">
-            <div class="label">Industry Type</div>
-            <select name="industry" required>
-              <option value="" disabled selected>Select Industry</option>
-              <option value="IT">IT</option>
-              <option value="Finance">Finance</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Education">Education</option>
-            </select>
-          </div>
-          <div class="field">
-            <div class="label">Company Website</div>
-            <input type="url" name="website" />
-          </div>
-          <div class="field">
-            <div class="label">Company Address</div>
-            <input type="text" name="address" required />
-          </div>
+    <header>Employer Registration</header>
+    
+    <div class="form-outer">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1">
+                1
+                <span class="progress-label">Company Details</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                2
+                <span class="progress-label">Representative</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                3
+                <span class="progress-label">Additional Info</span>
+            </div>
         </div>
-
-            <!-- Page 2: Representative Details -->
-            <div class="page">
-              <div class="title">Representative Details:</div>
-              <div class="field">
-                <div class="label">Full Name</div>
-                <input type="text" name="fullname" required />
-              </div>
-              <div class="field">
-                <div class="label">Designation</div>
-                <input type="text" name="designation" required />
-              </div>
-              <div class="field">
-                <div class="label">Contact Number</div>
-                <input type="tel" name="contact" pattern="[0-9]{10}" required />
-              </div>
-              
+        
+        <form action="{{ url_for('register_employer') }}" method="POST" enctype="multipart/form-data" id="registration-form">
+            <div class="form-content">
+                <!-- Page 1: Company Details -->
+                <div class="page active" data-page="1">
+                    <div class="title">Company Details</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Company Name</div>
+                            <input type="text" name="company_name" required placeholder="Enter company name" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Industry Type</div>
+                            <select name="industry" required>
+                                <option value="" disabled selected>Select Industry</option>
+                                <option value="IT">IT</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Hospitality">Hospitality</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Company Website</div>
+                            <input type="url" name="website" placeholder="https://example.com" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Company Address</div>
+                            <input type="text" name="address" required placeholder="Full company address" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-next">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Page 2: Representative Details -->
+                <div class="page" data-page="2">
+                    <div class="title">Representative Details</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Full Name</div>
+                            <input type="text" name="fullname" required placeholder="Enter your full name" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Designation</div>
+                            <input type="text" name="designation" required placeholder="Your position in the company" />
+                        </div>
+                    </div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Contact Number</div>
+                            <input type="tel" name="contact" pattern="[0-9]{10}" required placeholder="10-digit mobile number" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev">Previous</button>
+                        <button type="button" class="btn-next">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Page 3: Additional Information -->
+                <div class="page" data-page="3">
+                    <div class="title">Additional Information</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Company Logo (Optional)</div>
+                            <input type="file" name="logo" accept="image/*" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">LinkedIn Profile</div>
+                            <input type="url" name="linkedin" placeholder="LinkedIn profile URL" />
+                        </div>
+                    </div>
+                    
+                    <div class="title">Login Information</div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Email Address</div>
+                            <input type="email" name="email" required placeholder="Enter your email address" />
+                        </div>
+                    </div>
+                    
+                    <div class="fields-grid">
+                        <div class="field">
+                            <div class="label">Password</div>
+                            <input type="password" name="login_password" required placeholder="Create a strong password" />
+                        </div>
+                        
+                        <div class="field">
+                            <div class="label">Confirm Password</div>
+                            <input type="password" name="confirm_password" required placeholder="Confirm your password" />
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="terms" id="terms" required />
+                        <label for="terms">I agree to the Terms & Conditions</label>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev">Previous</button>
+                        <button type="submit" class="btn-submit">Register</button>
+                    </div>
+                </div>
             </div>
-
-           
-
-            <!-- Page 4: Additional Information -->
-            <div class="page">
-              <div class="title">Additional Information:</div>
-              <div class="field">
-                <div class="label">Company Logo (Optional)</div>
-                <input type="file" name="logo" accept="image/*" />
-              </div>
-              <div class="field">
-                <div class="label">LinkedIn Profile</div>
-                <input type="url" name="linkedin" />
-              </div>
-
-              <!--Login information-->
-              <div class="title">Login Information:</div>
-              <div class="field">
-                <div class="label">Email Address</div>
-                <input type="email" name="email" required />
-              </div>
-
-              <div class="field">
-                <div class="label">Password</div>
-                <input type="password" name="login_password" required />
-              </div>
-              <div class="field">
-                <div class="label">Confirm Password</div>
-                <input type="password" name="confirm_password" required />
-              </div>
-              
-              <div class="field checkbox-group">
-                <input type="checkbox" name="terms" required />
-                <label>I agree to the Terms & Conditions</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="field btns">
-            <button type="submit" class="submit">REGISTER</button>
-          </div>
         </form>
-      </div>
-
-      
     </div>
+</div>
 
-    <script src="/static/js/employer_register.js"></script>
-  </body>
-</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pages = document.querySelectorAll('.page');
+    const nextBtns = document.querySelectorAll('.btn-next');
+    const prevBtns = document.querySelectorAll('.btn-prev');
+    const progressSteps = document.querySelectorAll('.progress-step');
+    
+    // Next button event listeners
+    nextBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const currentPage = document.querySelector('.page.active');
+            const currentStepNum = parseInt(currentPage.dataset.page);
+            const nextStepNum = currentStepNum + 1;
+            
+            // Validate current page fields
+            const inputs = currentPage.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value) {
+                    input.style.borderColor = 'red';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) return;
+            
+            // Proceed to next page
+            currentPage.classList.remove('active');
+            const nextPage = document.querySelector(`.page[data-page="${nextStepNum}"]`);
+            nextPage.classList.add('active');
+            
+            // Update progress bar
+            progressSteps[currentStepNum - 1].classList.add('completed');
+            progressSteps[nextStepNum - 1].classList.add('active');
+        });
+    });
+    
+    // Previous button event listeners
+    prevBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const currentPage = document.querySelector('.page.active');
+            const currentStepNum = parseInt(currentPage.dataset.page);
+            const prevStepNum = currentStepNum - 1;
+            
+            // Go back to previous page
+            currentPage.classList.remove('active');
+            const prevPage = document.querySelector(`.page[data-page="${prevStepNum}"]`);
+            prevPage.classList.add('active');
+            
+            // Update progress bar
+            progressSteps[currentStepNum - 1].classList.remove('active');
+            progressSteps[prevStepNum - 1].classList.remove('completed');
+            progressSteps[prevStepNum - 1].classList.add('active');
+        });
+    });
+    
+    // Form validation on submit
+    const form = document.getElementById('registration-form');
+    form.addEventListener('submit', function(e) {
+        const passwordInput = document.querySelector('input[name="login_password"]');
+        const confirmInput = document.querySelector('input[name="confirm_password"]');
+        
+        if (passwordInput.value !== confirmInput.value) {
+            e.preventDefault();
+            confirmInput.style.borderColor = 'red';
+            alert('Passwords do not match!');
+        }
+    });
+});
+</script>
+{% endblock %}

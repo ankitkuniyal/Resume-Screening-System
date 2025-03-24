@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title|default('Account Registration') }}</title>
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --primary-hover: #2d4de0;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --light-bg: #f9f9f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        .error-text {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .form-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: var(--success-color);
+        }
+
+        .alert-error {
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: var(--error-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if success_message %}
+        <div class="alert alert-success">
+            {{ success_message }}
+        </div>
+        {% endif %}
+        
+        {% if error_message %}
+        <div class="alert alert-error">
+            {{ error_message }}
+        </div>
+        {% endif %}
+        
+        <div class="header">
+            <h1>{{ page_title|default('Create Account') }}</h1>
+            <p>{{ page_subtitle|default('Fill out the form below to register') }}</p>
+        </div>
+        
+        <form method="POST" action="{{ form_action|default('/register') }}">
+            {% if csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="fullname">Full Name</label>
+                <input 
+                    type="text" 
+                    id="fullname" 
+                    name="fullname" 
+                    value="{{ form_data.fullname|default('') }}" 
+                    placeholder="Enter your full name"
+                    required
+                >
+                {% if form_errors.fullname %}
+                    <span class="error-text">{{ form_errors.fullname }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value="{{ form_data.email|default('') }}" 
+                    placeholder="Enter your email address"
+                    required
+                >
+                {% if form_errors.email %}
+                    <span class="error-text">{{ form_errors.email }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Create a strong password"
+                    required
+                >
+                {% if form_errors.password %}
+                    <span class="error-text">{{ form_errors.password }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password_confirm">Confirm Password</label>
+                <input 
+                    type="password" 
+                    id="password_confirm" 
+                    name="password_confirm" 
+                    placeholder="Enter your password again"
+                    required
+                >
+                {% if form_errors.password_confirm %}
+                    <span class="error-text">{{ form_errors.password_confirm }}</span>
+                {% endif %}
+            </div>
+            
+            {% if show_company_field|default(true) %}
+            <div class="form-group">
+                <label for="company">Company Name (Optional)</label>
+                <input 
+                    type="text" 
+                    id="company" 
+                    name="company" 
+                    value="{{ form_data.company|default('') }}" 
+                    placeholder="Enter your company name"
+                >
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="button">Register Account</button>
+            
+            <div class="form-footer">
+                Already have an account? <a href="{{ login_url|default('/login') }}">Sign in</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

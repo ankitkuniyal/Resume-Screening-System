@@ -79,25 +79,28 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        
-        if user and check_password_hash(user.password, password):
-            session['user_id'] = user.id
-            session['role'] = user.role
-            
-            if user.role == 'applicant':
-                return redirect(url_for('applicant_dashboard'))
-            elif user.role == 'employer':
-                return redirect(url_for('employer_dashboard'))
-            elif user.role == 'admin':
-                return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid credentials!', 'danger')
-    
-    return render_template('login.html')
+ if request.method == 'POST':
+    username = request.form['username']
+    password = request.form['password']
+
+    # Fetch user by username or email if it's an admin
+    user = User.query.filter((User.username == username) | ((User.email == username) & (User.role == 'admin'))).first()
+
+    if user and check_password_hash(user.password, password):
+        session['user_id'] = user.id
+        session['role'] = user.role
+
+        if user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        elif user.role == 'applicant':
+            return redirect(url_for('applicant_dashboard'))
+        elif user.role == 'employer':
+            return redirect(url_for('employer_dashboard'))
+    else:
+        flash('Invalid credentials!', 'danger')
+
+ return render_template('login.html')
+
 
 @app.route('/applicant')
 def applicant_dashboard():
@@ -182,9 +185,9 @@ def register_employer():
         flash('Employer registration successful!', 'success')
         return redirect(url_for('login'))
 
-    return render_template('register_employer.html')
+    return render_template('employer_register.html')
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=3000)
+    app.run(debug=True,port=3200)
