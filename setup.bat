@@ -8,7 +8,7 @@ pip install -r requirements.txt
 REM 2. Create PostgreSQL Database
 echo Setting up PostgreSQL database...
 psql -U postgres -c "CREATE DATABASE resume_screening;"
-psql -U postgres -c "CREATE USER postgres WITH PASSWORD 'password';"
+psql -U postgres -c "CREATE USER postgres WITH PASSWORD '0Password@SQL';"
 psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE resume_screening TO postgres;"
 
 REM 3. Apply Flask Migrations
