@@ -53,11 +53,6 @@ nav.scrolled {
 
 .nav__logo a {
   font-size: 1.5rem;
-<<<<<<< HEAD
-  font-weight: 500;
-  color: var(--primary-color-dark);
-  transition: 0.3s;
-=======
   font-weight: 700;
   color: var(--primary);
   text-decoration: none;
@@ -79,7 +74,6 @@ nav.scrolled {
 
 .nav__logo a:hover::after {
   width: 100%;
->>>>>>> 85f83807108e0293397854d34b0bb82dfd55f12d
 }
 
 .nav__links {
@@ -90,13 +84,6 @@ nav.scrolled {
 }
 
 .link a {
-<<<<<<< HEAD
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-color);
-  transition: 0.3s;
-=======
   text-decoration: none;
   color: var(--dark);
   font-weight: 500;
@@ -115,7 +102,6 @@ nav.scrolled {
   background: var(--primary);
   transition: var(--transition);
   border-radius: 1px;
->>>>>>> 85f83807108e0293397854d34b0bb82dfd55f12d
 }
 
 .link a:hover {
@@ -208,7 +194,6 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
 }
 
 p {
