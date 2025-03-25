@@ -51,12 +51,12 @@
                     <div class="fields-grid">
                         <div class="field">
                             <div class="label">Mobile Number</div>
-                            <input type="tel" name="phone" required placeholder="Enter your mobile number" />
+                            <input type="tel" name="phone" required placeholder="Enter your mobile number" pattern="[0-9]+" title="Only numbers are allowed" />
                         </div>
                         
                         <div class="field">
                             <div class="label">Date of Birth</div>
-                            <input type="date" name="dob" required />
+                            <input type="date" name="dob" required max="{{ max_dob }}" />
                         </div>
                     </div>
                     
@@ -101,7 +101,18 @@
                         
                         <div class="field">
                             <div class="label">Field Of Study</div>
-                            <input type="text" name="field_of_study" required placeholder="Your major or specialization" />
+                            <select name="field_of_study" required>
+                                <option value="" disabled selected>Select your field of study</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Business Administration">Business Administration</option>
+                                <option value="Medicine">Medicine</option>
+                                <option value="Law">Law</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Education">Education</option>
+                                <option value="Science">Science</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </div>
                     

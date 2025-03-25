@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re  # Import regex for validation
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -135,13 +136,12 @@ def logout():
     flash('Logged out successfully.', 'info')
     return redirect(url_for('home'))
 
-# Applicant Registration with Email Validation
 @app.route('/register/applicant', methods=['GET', 'POST'])
 def register_applicant():
     if request.method == 'POST':
         email = request.form['email']
         phone = request.form['phone']
-        password = generate_password_hash(request.form['password'])
+        password = request.form['password']
         dob = request.form['dob']
         gender = request.form['gender']
         address = request.form['address']
@@ -161,18 +161,42 @@ def register_applicant():
             flash('Email already registered!', 'danger')
             return redirect(url_for('register_applicant'))
 
-        new_user = User(username=email, email=email, phone=phone, password=password, role='applicant')
-        db.session.add(new_user)
-        db.session.commit()
+        # Password validation
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return redirect(url_for('register_applicant'))
 
-        new_applicant = Applicant(user_id=new_user.id, dob=dob, gender=gender, address=address,
-                                  highest_qualification=highest_qualification, field_of_study=field_of_study,
-                                  experience_years=experience_years)
-        db.session.add(new_applicant)
-        db.session.commit()
+        # Date of Birth validation
+        max_dob = (datetime.utcnow() - timedelta(days=18*365)).date()  # Calculate max DOB (18 years ago)
+        dob_date = datetime.strptime(dob, '%Y-%m-%d').date()  # Convert string to date
 
-        flash('Registration successful!', 'success')
-        return redirect(url_for('login'))
+        if dob_date > max_dob:
+            flash('You must be at least 18 years old to register.', 'danger')
+            return redirect(url_for('register_applicant'))
+
+        # Hash the password
+        hashed_password = generate_password_hash(password)
+
+        try:
+            # Create new user
+            new_user = User(username=email, email=email, phone=phone, password=hashed_password, role='applicant')
+            db.session.add(new_user)
+            db.session.commit()
+
+            # Create new applicant
+            new_applicant = Applicant(user_id=new_user.id, dob=dob, gender=gender, address=address,
+                                      highest_qualification=highest_qualification, field_of_study=field_of_study,
+                                      experience_years=experience_years)
+            db.session.add(new_applicant)
+            db.session.commit()
+
+            flash('Registration successful!', 'success')
+            return redirect(url_for('login'))
+
+        except Exception as e:
+            db.session.rollback()  # Rollback the session in case of error
+            flash('An error occurred while registering. Please try again.', 'danger')
+            return redirect(url_for('register_applicant'))
 
     return render_template('applicant_register.html')
 
