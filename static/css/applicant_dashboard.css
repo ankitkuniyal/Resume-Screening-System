@@ -200,4 +200,6 @@ footer {
   }
 
   th, td {
-    padding:
+    padding: 8px;
+  }
+}
