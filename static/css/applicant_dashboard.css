@@ -1,6 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
+:root {
+  --primary: #4361ee;
+  --primary-dark: #3a56c5;
+  --primary-light: #4895ef;
+  --secondary: #4cc9f0;
+  --dark: #2b2d42;
+  --light: #f8f9fa;
+  --gray: #64748b;
+  --gray-light: #e2e8f0;
+  --success: #2ecc71;
+  --danger: #ff4d4f;
+  --white: #ffffff;
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-light));
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09);
+  --transition: all 0.3s ease;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
 
- /* Reset and Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -8,198 +29,206 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
   line-height: 1.6;
-  background-color: #f4f4f4;
-  color: #333;
-}
-
-/* Container Styles */
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
 }
 
 /* Header Styles */
 header {
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px 0;
-}
-
-header .container {
+  background: var(--gradient-primary);
+  color: var(--white);
+  padding: 20px 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: var(--shadow-sm);
 }
 
 header h1 {
-  color: #2c3e50;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
 }
 
-nav ul {
+header nav ul {
   display: flex;
   list-style: none;
+  gap: 20px;
 }
 
-nav ul li {
-  margin-left: 20px;
-}
-
-nav ul li a {
+header nav ul li a {
+  color: var(--white);
   text-decoration: none;
-  color: #34495e;
-  transition: color 0.3s ease;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
 }
 
-nav ul li a:hover {
-  color: #3498db;
+header nav ul li a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: var(--white);
+  transition: width 0.3s ease;
+}
+
+header nav ul li a:hover::after {
+  width: 100%;
 }
 
 .logout-btn {
-  background-color: #3498db;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
 }
 
-/* Main Content Styles */
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Main Content */
 main {
-  padding: 30px 0;
+  padding: 30px 5%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Job Listings Section */
+#job-listings {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 25px;
 }
 
 #job-listings h2 {
   margin-bottom: 20px;
-  color: #2c3e50;
-  text-align: center;
+  color: var(--primary-dark);
+  font-weight: 600;
 }
 
 .job-card {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  background-color: var(--gray-light);
+  border-radius: var(--radius-md);
   padding: 20px;
+  margin-bottom: 20px;
+  transition: var(--transition);
+  position: relative;
+}
+.job-card p{
+  width: 70%;
+}
+.job-card:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-3px);
 }
 
-.job-header {
-  margin-bottom: 15px;
-}
-
-.job-header h3 {
-  color: #2c3e50;
-}
-
-.job-details p {
+.job-card h3 {
+  color: var(--primary);
   margin-bottom: 10px;
-}
-
-.job-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
-}
-
-.post-date {
-  color: #7f8c8d;
-  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .apply-btn {
-  background-color: #2ecc71;
-  color: white;
-  text-decoration: none;
-  display: inline-block;
-  padding: 8px 15px;
-  border-radius: 4px;
+  background: var(--gradient-primary);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--transition);
+  font-weight: 500;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
 }
 
 .apply-btn:hover {
-  background-color: #27ae60;
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
 }
 
-/* Applied Jobs Section Styles */
+/* Applied Jobs Section */
 #applied_jobs {
-  margin-top: 40px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 25px;
 }
 
 #applied_jobs h2 {
-  text-align: center;
   margin-bottom: 20px;
-  color: #2c3e50;
+  color: var(--primary-dark);
+  font-weight: 600;
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--white);
 }
 
 thead {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--gray-light);
+}
+
+thead tr {
+  background-color: var(--primary-light);
+  color: var(--white);
 }
 
 th, td {
-  padding: 12px;
+  padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(72, 149, 239, 0.05);
 }
 
 tbody tr:hover {
-  background-color: #f1f1f1;
+  background-color: rgba(72, 149, 239, 0.1);
+  transition: var(--transition);
 }
 
-#noJobsMessage {
-  text-align: center;
-  font-size: 1rem;
-  color: #7f8c8d;
-  margin: 20px 0;
-}
-
-/* Footer Styles */
-footer {
-  background-color: white;
-  padding: 15px 0;
-  text-align: center;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  header .container {
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  header {
     flex-direction: column;
     text-align: center;
+    gap: 15px;
   }
 
-  nav ul {
-    margin-top: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  nav ul li {
-    margin: 0 10px 10px;
+  header nav ul {
+    flex-direction: column;
+    align-items: center;
   }
 
   .job-card {
     padding: 15px;
   }
 
-  table {
-    font-size: 0.9rem;
+  .apply-btn {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
   }
 
-  th, td {
-    padding: 8px;
+  table {
+    font-size: 0.9rem;
   }
 }

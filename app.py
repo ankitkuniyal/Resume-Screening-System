@@ -65,6 +65,15 @@ class Applicant(db.Model):
     
     skills = db.relationship('ApplicantSkill', backref='applicant', lazy=True)
 
+class AppliedJob(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    applicant_id = db.Column(db.Integer, db.ForeignKey('applicant.id'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
+    application_date = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='pending')  # New status field
+
+    applicant = db.relationship('Applicant', backref='applied_jobs')
+    job = db.relationship('Job', backref='applicants')
 # Skills Model
 class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -87,7 +96,7 @@ def login():
         password = request.form['password']
 
         # Fetch user by username or email if it's an admin
-        user = User.query.filter((User.username == username) | ((User.email == username) & (User.role == 'admin'))).first()
+        user = User.query.filter((User.username == username) | ((User.email == username))).first()
 
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
@@ -104,17 +113,50 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/applicant')
+
+@app.route('/applicant/dashboard')
 def applicant_dashboard():
-    if 'user_id' in session and session['role'] == 'applicant':
-        return render_template('applicant_dashboard.html')
-    flash('Unauthorized access!', 'danger')
-    return redirect(url_for('login'))
+    if 'user_id' not in session:
+        flash('You need to log in first!', 'danger')
+        return redirect(url_for('login'))
+
+    # Fetch the applicant's information
+    user = User.query.get(session['user_id'])
+    applicant = Applicant.query.filter_by(user_id=user.id).first()
+
+    if not applicant:
+        flash('Applicant profile not found!', 'danger')
+        return redirect(url_for('some_other_route'))  # Redirect to an appropriate route
+
+    # Fetch recent job postings
+    job_postings = Job.query.all()  # You can add filters or limits as needed
+
+    # Fetch applied jobs
+    applied_jobs = AppliedJob.query.filter_by(applicant_id=applicant.id).all()
+
+    return render_template('applicant_dashboard.html', 
+                           applicant_name=user.username, 
+                           job_postings=job_postings, 
+                           applied_jobs=applied_jobs)
 
 @app.route('/employer')
 def employer_dashboard():
     if 'user_id' in session and session['role'] == 'employer':
-        return render_template('employer_dashboard.html')
+        # Fetch the employer's information
+        user = User.query.get(session['user_id'])
+        employer = Employer.query.filter_by(user_id=user.id).first()
+
+        if not employer:
+            flash('Employer profile not found!', 'danger')
+            return redirect(url_for('login'))
+
+        # Fetch jobs posted by the employer
+        jobs_posted = Job.query.filter_by(employer_id=employer.id).all()
+
+        return render_template('employer_dashboard.html', 
+                               employer_name=employer.user.username,  # Use the username instead of email
+                               jobs_posted=jobs_posted)
+
     flash('Unauthorized access!', 'danger')
     return redirect(url_for('login'))
 
@@ -176,51 +218,85 @@ def register_applicant():
 
         # Hash the password
         hashed_password = generate_password_hash(password)
-
-        try:
-            # Create new user
-            new_user = User(username=email, email=email, phone=phone, password=hashed_password, role='applicant')
-            db.session.add(new_user)
-            db.session.commit()
-
-            # Create new applicant
-            new_applicant = Applicant(user_id=new_user.id, dob=dob, gender=gender, address=address,
-                                      highest_qualification=highest_qualification, field_of_study=field_of_study,
-                                      experience_years=experience_years)
-            db.session.add(new_applicant)
-            db.session.commit()
-
-            flash('Registration successful!', 'success')
-            return redirect(url_for('login'))
-
-        except Exception as e:
-            db.session.rollback()  # Rollback the session in case of error
-            flash('An error occurred while registering. Please try again.', 'danger')
-            return redirect(url_for('register_applicant'))
-
-    return render_template('applicant_register.html')
-
-# Employer Registration
-@app.route('/register/employer', methods=['GET', 'POST'])
-def register_employer():
-    if request.method == 'POST':
-        email = request.form['email']
-        industry = request.form['industry']
-        address = request.form['address']
-        contact = request.form['contact']
-        linkedin = request.form['linkedin']
-        password = generate_password_hash(request.form['password'])
-
-        new_user = User(username=email, email=email, password=password, role='employer')
+        # Create new user
+        new_user = User(username=email, email=email, phone=phone, password=hashed_password, role='applicant')
         db.session.add(new_user)
         db.session.commit()
 
-        new_employer = Employer(user_id=new_user.id, industry=industry, address=address, contact=contact, linkedin=linkedin)
-        db.session.add(new_employer)
+        # Create new applicant
+        new_applicant = Applicant(user_id=new_user.id, dob=dob, gender=gender, address=address,
+                                  highest_qualification=highest_qualification, field_of_study=field_of_study,
+                                  experience_years=experience_years)
+        db.session.add(new_applicant)
         db.session.commit()
 
-        flash('Employer registration successful!', 'success')
+
+
+    return render_template('applicant_register.html')
+@app.route('/apply/<int:job_id>', methods=['POST'])
+def apply_for_job(job_id):
+    if 'user_id' not in session or session['role'] != 'applicant':
+        flash('You need to log in as an applicant to apply for jobs!', 'danger')
         return redirect(url_for('login'))
+
+    # Fetch the applicant's information
+    applicant = Applicant.query.filter_by(user_id=session['user_id']).first()
+    if not applicant:
+        flash('Applicant profile not found!', 'danger')
+        return redirect(url_for('applicant_dashboard'))
+
+    # Check if the job exists
+    job = Job.query.get(job_id)
+    if not job:
+        flash('Job not found!', 'danger')
+        return redirect(url_for('applicant_dashboard'))
+
+    # Check if the applicant has already applied for this job
+    existing_application = AppliedJob.query.filter_by(applicant_id=applicant.id, job_id=job.id).first()
+    if existing_application:
+        flash('You have already applied for this job!', 'warning')
+        return redirect(url_for('applicant_dashboard'))
+
+    # Create a new application with default status 'pending'
+    new_application = AppliedJob(applicant_id=applicant.id, job_id=job.id)
+    db.session.add(new_application)
+    db.session.commit()
+
+    flash('Application submitted successfully!', 'success')
+    return redirect(url_for('applicant_dashboard'))
+
+# Update the applicant_dashboard.html template to include job application buttons
+
+@app.route('/register/employer', methods=['GET', 'POST'])
+def register_employer():
+    if request.method == 'POST':
+        
+            # Get form data
+            email = request.form['email']
+            industry = request.form['industry']
+            address = request.form['address']
+            contact = request.form['contact']
+            linkedin = request.form['linkedin']
+            password = generate_password_hash(request.form['login_password'])  # Use the correct field name
+
+            # Check if the email already exists
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                flash('Email already registered. Please use a different email.', 'danger')
+                return redirect(url_for('register_employer'))
+
+            # Create new user
+            new_user = User(username=email, email=email, password=password, role='employer')
+            db.session.add(new_user)
+            db.session.commit()
+
+            # Create new employer
+            new_employer = Employer(user_id=new_user.id, industry=industry, address=address, contact=contact, linkedin=linkedin)
+            db.session.add(new_employer)
+            db.session.commit()
+
+            flash('Employer registration successful!', 'success')
+            return redirect(url_for('login'))
 
     return render_template('employer_register.html')
 

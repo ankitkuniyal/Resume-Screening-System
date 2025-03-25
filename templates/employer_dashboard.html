@@ -1,42 +1,52 @@
 {% extends 'base.html' %}
+
+{% block title %}{{ employer_name }}'s Dashboard{% endblock %}
 {% block styles %}
-<link rel="stylesheet" href="static/css/employer_dashboard.css">
+<link rel="stylesheet" href="../static/css/employer_dashboard.css">
 {% endblock %}
 {% block content %}
-    <div class="sidebar">
-        <h2>Dashboard</h2>
+<header>
+    <h1>Welcome, {{ employer_name }}!</h1>
+    <nav>
         <ul>
-            <li>Dashboard</li>
-            <li>Post a Job</li>
-            <li>My Job Listings</li>
-            <li>Search Applicants</li>jobs posted, 
-            <li>Shortlisted Candidates</li>
-            <li>Messages</li>
-            <li>Profile Settings</li>
+            <li><a href="{{ url_for('employer_dashboard') }}">Home</a></li>
+            <li><a href="">Post a Job</a></li>
+            <li><a href="">Resume Screener</a></li>
+            <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
         </ul>
-    </div>
-    <div class="content">
-        <div class="topbar">
-            <h2>Employer Dashboard</h2>
-            <button class="button">Logout</button>
-        </div>
-        <div class="search-bar">
-            <input type="text" placeholder="Search skills... (e.g., Python, React, AI)">
-        </div>
-        <h3>Jobs Posted</h3>
-        <div class="card">
-            <p><strong>Job Title:</strong> Software Engineer</p>
-            <p><strong>Date Posted:</strong> Jan 25, 2025</p>
-            <p><strong>Applicants:</strong> 15</p>
-            <p><strong>Shortlisted:</strong> 5</p>
-            <p><strong>Status:</strong> Active</p>
-        </div>
-        <h3>Shortlisted Applicants</h3>
-        <div class="card">
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Matched Skills:</strong> Python, React</p>
-            <p><strong>Resume:</strong> <a href="#">Download</a></p>
-            <button class="button">Schedule Interview</button>
-        </div>
-    </div>
+    </nav>
+</header>
+
+<main>
+    <section id="job_listings">
+        <h2>My Job Listings</h2>
+        
+        {% if jobs %}
+            <div class="job-listings">
+                {% for job in jobs %}
+                <div class="job-card">
+                    <h3>{{ job.job_title }}</h3>
+                    <p><strong>Location:</strong> {{ job.location }}</p>
+                    <p><strong>Job Type:</strong> {{ job.job_type }}</p>
+                    <p><strong>Applicants:</strong> {{ job.applicants|length }}</p> <!-- Assuming job.applicants is a list -->
+                    <div class="buttons">
+                        <button class="button" onclick="window.location.href='/edit_job/{{ job.id }}'">Edit</button>
+                        <button class="button delete-button" onclick="confirmDelete('{{ job.id }}')">Delete</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No job listings available. Please post a job!</p>
+        {% endif %}
+    </section>
+</main>
+
+<script>
+function confirmDelete(jobId) {
+    if (confirm("Are you sure you want to delete this job listing?")) {
+        window.location.href = "/delete_job/" + jobId;
+    }
+}
+</script>
 {% endblock %}

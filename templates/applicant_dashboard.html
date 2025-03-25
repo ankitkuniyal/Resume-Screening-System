@@ -1,99 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Applicant Dashboard</title>
-    <link rel="stylesheet" href="/static/css/applicant_dashboard.css">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <h1>Applicant Dashboard</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#applied_jobs">Applied Jobs</a></li>
-                    <li><a href="#" class="logout-btn">Logout</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+{% extends 'base.html' %}
 
-    <main>
-        <div class="container">
-            <section id="job-listings">
-                <h2>Recent Job Postings</h2>
-                
-                <div class="job-card">
-                    <div class="job-header">
-                        <h3>Software Engineer</h3>
-                    </div>
-                    
-                    <div class="job-details">
-                        <p><strong>Company:</strong> Tech Solutions Inc.</p>
-                        <p><strong>Location:</strong> Remote</p>
-                        <p><strong>Description:</strong> We are seeking a skilled Software Engineer to join our innovative team. The ideal candidate will have experience in full-stack development and a passion for solving complex technical challenges.</p>
-                        
-                        <div class="job-footer">
-                            <span class="post-date">Posted: 2 days ago</span>
-                            <a href="#" class="apply-btn">Apply Now</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="job-card">
-                    <div class="job-header">
-                        <h3>Data Analyst</h3>
-                    </div>
-                    
-                    <div class="job-details">
-                        <p><strong>Company:</strong> Data Insights LLC</p>
-                        <p><strong>Location:</strong> New York, NY</p>
-                        <p><strong>Description:</strong> We are looking for a talented Data Analyst to help us transform raw data into meaningful insights. Strong analytical skills and proficiency in data visualization tools are required.</p>
-                        
-                        <div class="job-footer">
-                            <span class="post-date">Posted: 4 days ago</span>
-                            <a href="#" class="apply-btn">Apply Now</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
+{% block title %}{{ applicant_name }}'s Dashboard{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="../static/css/applicant_dashboard.css">
+{% endblock %}
+{% block content %}
+<header>
+    <h1>Welcome, {{ applicant_name }}!</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="#applied_jobs">Applied Jobs</a></li>
+            <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <section id="applied_jobs">
-        <div class="container">
-            <h2>Jobs You Have Applied For</h2>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Job Title</th>
-                        <th>Company</th>
-                        <th>Location</th>
-                        <th>Job Type</th>
-                        <th>Applied On</th>
-                    </tr>
-                </thead>
-                <tbody id="jobsList">
-                    <!-- Job applications will be inserted here -->
-                </tbody>
-            </table>
-    
-            <p id="noJobsMessage">You have not applied to any jobs yet.</p>
-    
-            <a href="applicant_dashboard.html" class="btn">Back to Dashboard</a>
+<main>
+    <section id="job-listings">
+        <h2>Recent Job Postings</h2>
+        
+        {% for job in job_postings %}
+        <div class="job-card">
+            <h3>{{ job.job_title }}</h3>
+            <p><strong>Company:</strong> {{ job.company }}</p>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p><strong>Description:</strong> {{ job.description }}</p>
+            <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
+                <button type="submit" class="apply-btn">Apply Now</button>
+            </form>
         </div>
+        {% else %}
+        <p>No recent job postings available.</p>
+        {% endfor %}
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 JobSeeker Platform. All rights reserved.</p>
-        </div>
-    </footer>
-</body>
-</html>
+    <section id="applied_jobs">
+        <h2>Jobs You Have Applied For</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Job Type</th>
+                    <th>Applied On</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for applied_job in applied_jobs %}
+                <tr>
+                    <td>{{ applied_job.job.job_title }}</td>
+                    <td>{{ applied_job.job.company }}</td>
+                    <td>{{ applied_job.job.location }}</td>
+                    <td>{{ applied_job.job.job_type }}</td>
+                    <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ applied_job.status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">You have not applied to any jobs yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

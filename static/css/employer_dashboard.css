@@ -1,18 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root {
-  --primary-color: #7a9cd3;
-  --primary-color-light: #0f1011;
-  --background-color: #f8fafc;
-  --sidebar-background: #1e293b;
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
+  --primary: #4361ee;
+  --primary-dark: #3a56c5;
+  --primary-light: #4895ef;
+  --secondary: #4cc9f0;
+  --dark: #2b2d42;
+  --light: #f8f9fa;
+  --gray: #64748b;
+  --gray-light: #e2e8f0;
+  --success: #2ecc71;
+  --danger: #ff4d4f;
   --white: #ffffff;
-  --border-color: #e2e8f0;
-  --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --radius-default: 0.75rem;
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-light));
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09);
+  --transition: all 0.3s ease;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 }
 
 * {
@@ -22,171 +29,160 @@
 }
 
 body {
-  font-family: 'Manrope', sans-serif;
-  background: linear-gradient(to right, #eef2ff, #e6e7e9);
-  color: var(--text-primary);
-  line-height: 1.5;
-  display: flex;
-  min-height: 100vh;
-  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
+  line-height: 1.6;
 }
 
-.sidebar {
-  width: 260px;
-  background: var(--sidebar-background);
-  border-right: 1px solid var(--border-color);
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  transition: var(--transition-smooth);
-  box-shadow: var(--shadow-medium);
-}
-
-.sidebar h2 {
+header {
+  background: var(--gradient-primary);
   color: var(--white);
-  font-weight: 700;
-  text-align: center;
-  font-size: 1.4rem;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-}
-
-.sidebar ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.sidebar ul li {
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-default);
-  color: var(--white);
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  position: relative;
-  overflow: hidden;
-  font-size: 0.9rem;
-  text-transform: capitalize;
-}
-
-.sidebar ul li:hover {
-  color: var(--primary-color);
-  background: rgba(96, 165, 250, 0.1);
-}
-
-.sidebar ul li::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: var(--primary-color);
-  transform: scaleY(0);
-  transition: var(--transition-smooth);
-}
-
-.sidebar ul li:hover::before {
-  transform: scaleY(1);
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-.topbar {
+  padding: 20px 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--white);
-  border-radius: var(--radius-default);
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: var(--shadow-sm);
 }
 
-.button {
-  padding: 0.75rem 1.25rem;
-  background: linear-gradient(to right, var(--primary-color-light), var(--primary-color));
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-default);
+header h1 {
+  font-size: 1.8rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  letter-spacing: -0.02em;
-  box-shadow: var(--shadow-medium);
 }
 
-.button:hover {
-  background: var(--primary-color-light);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+header nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
 }
 
-.search-bar input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-default);
-  font-size: 0.9rem;
-  font-weight: 400;
-  transition: var(--transition-smooth);
-  outline: none;
-}
-
-.search-bar input:focus {
-  border-color: var(--primary-color-light);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-}
-
-.card {
-  background: var(--white);
-  border-radius: var(--radius-default);
-  border: 1px solid var(--border-color);
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: var(--transition-smooth);
+header nav ul li a {
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
   position: relative;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-medium);
-  border-color: var(--primary-color-light);
+header nav ul li a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: var(--white);
+  transition: width 0.3s ease;
 }
 
-@media (max-width: 900px) {
-  .sidebar {
-    width: 220px;
-    padding: 1.5rem;
-  }
-  .content {
-    padding: 1.5rem;
-  }
+header nav ul li a:hover::after {
+  width: 100%;
 }
 
-@media (max-width: 600px) {
-  body {
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+main {
+  padding: 30px 5%;
+}
+
+#job_listings {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 25px;
+}
+
+#job_listings h2 {
+  margin-bottom: 20px;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.job-listings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.job-card {
+  background-color: var(--gray-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  transition: var(--transition);
+  position: relative;
+}
+
+.job-card:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-3px);
+}
+
+.job-card h3 {
+  color: var(--primary);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.button:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.button:first-child {
+  background: var(--gradient-primary);
+  color: var(--white);
+}
+
+.delete-button {
+  background-color: var(--danger);
+  color: var(--white);
+}
+
+@media screen and (max-width: 768px) {
+  header {
     flex-direction: column;
+    text-align: center;
+    gap: 15px;
   }
-  .sidebar {
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
+
+  header nav ul {
+    flex-direction: column;
+    align-items: center;
   }
-  .sidebar ul {
-    flex-direction: row;
-    justify-content: space-around;
+
+  .job-listings {
+    grid-template-columns: 1fr;
+  }
+
+  .job-card {
+    padding: 15px;
+  }
+
+  .buttons {
+    flex-direction: column;
   }
 }
