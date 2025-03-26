@@ -148,7 +148,7 @@
                 <!-- Page 4: Skills and Login -->
                 <div class="page" data-page="4">
                     <div class="title">Skills</div>
-                    <div class="field">
+                    <div class="field" id="skills-section" style="display: none;"></div>
                         <div class="label">Select Your Skills</div>
                         <div class="checkbox-group">
                             <label><input type="checkbox" name="skills" value="Java" /> Java</label>
@@ -163,6 +163,21 @@
                             <label><input type="checkbox" name="skills" value="Go" /> Go</label>
                         </div>
                     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fieldOfStudySelect = document.querySelector('select[name="field_of_study"]');
+    const skillsSection = document.getElementById('skills-section');
+
+    fieldOfStudySelect.addEventListener('change', function() {
+        if (this.value === 'Computer Science') {
+            skillsSection.style.display = 'block';
+        } else {
+            skillsSection.style.display = 'none';
+        }
+    });
+});
+</script>
                     
                     <div class="title">Login Information</div>
                     
