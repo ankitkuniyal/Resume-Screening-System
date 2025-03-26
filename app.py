@@ -88,7 +88,18 @@ class ApplicantSkill(db.Model):
 @app.route('/')
 def home():
     return render_template('homepage.html')
-
+@app.route('/delete_database', methods=['POST'])
+def delete_database():
+        if 'user_id' in session and session['role'] == 'admin':
+            try:
+                db.drop_all()
+                db.create_all()
+                flash('Database has been reset successfully!', 'success')
+            except Exception as e:
+                flash(f'An error occurred while resetting the database: {str(e)}', 'danger')
+        else:
+            flash('Unauthorized access!', 'danger')
+        return redirect(url_for('admin_dashboard'))
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -218,19 +229,21 @@ def register_applicant():
 
         # Hash the password
         hashed_password = generate_password_hash(password)
+
         # Create new user
         new_user = User(username=email, email=email, phone=phone, password=hashed_password, role='applicant')
         db.session.add(new_user)
         db.session.commit()
 
         # Create new applicant
-        new_applicant = Applicant(user_id=new_user.id, dob=dob, gender=gender, address=address,
+        new_applicant = Applicant(user_id=new_user.id, dob=dob_date, gender=gender, address=address,
                                   highest_qualification=highest_qualification, field_of_study=field_of_study,
                                   experience_years=experience_years)
         db.session.add(new_applicant)
         db.session.commit()
 
-
+        flash('Registration successful!', 'success')
+        return redirect(url_for('login'))
 
     return render_template('applicant_register.html')
 @app.route('/apply/<int:job_id>', methods=['POST'])
