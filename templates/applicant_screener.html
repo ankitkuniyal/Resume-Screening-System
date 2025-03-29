@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/applicant_screener.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Applicants for {{ job.job_title }} at {{ job.company }}</h2>
+    <p><strong>Required Skills:</strong> {{ job.required_skills|join(', ') }}</p>
+    
+    <div class="mb-3">
+        <span>Sort by match score: </span>
+        <a href="{{ url_for('view_applicants', job_id=job.id, sort='asc') }}" 
+           class="btn btn-sm {% if sort_order == 'asc' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Lowest First
+        </a>
+        <a href="{{ url_for('view_applicants', job_id=job.id, sort='desc') }}" 
+           class="btn btn-sm {% if sort_order == 'desc' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Highest First
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Qualification</th>
+                    <th>Experience</th>
+                    <th>Match Score</th>
+                    <th>Matched Skills</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for applicant in applicants %}
+                <tr>
+                    <td>{{ applicant.name }}</td>
+                    <td>{{ applicant.email }}</td>
+                    <td>{{ applicant.phone }}</td>
+                    <td>{{ applicant.highest_qualification }}</td>
+                    <td>{{ applicant.experience_years }} years</td>
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ applicant.score }}%"
+                                 aria-valuenow="{{ applicant.score }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ applicant.score }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ applicant.matched_skills|join(', ') }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if applicant.status == 'accepted' %}bg-success
+                            {% elif applicant.status == 'rejected' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ applicant.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('view_resume', applicant_id=applicant.applicant_id) }}" 
+                           class="btn btn-sm btn-info">View Resume</a>
+                        <div class="btn-group">
+                            <form method="POST" action="{{ url_for('update_application_status', application_id=applicant.application_id) }}" style="display: inline;">
+                                <input type="hidden" name="status" value="accepted">
+                                <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('update_application_status', application_id=applicant.application_id) }}" style="display: inline;">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center">No applicants found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

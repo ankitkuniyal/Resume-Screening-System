@@ -146,23 +146,14 @@
                 </div>
                 
                 <!-- Page 4: Skills and Login -->
-                <div class="page" data-page="4">
-                    <div class="title">Skills</div>
-                    <div class="field" id="skills-section" style="display: none;"></div>
-                        <div class="label">Select Your Skills</div>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" name="skills" value="Java" /> Java</label>
-                            <label><input type="checkbox" name="skills" value="Python" /> Python</label>
-                            <label><input type="checkbox" name="skills" value="SQL" /> SQL</label>
-                            <label><input type="checkbox" name="skills" value="C++" /> C++</label>
-                            <label><input type="checkbox" name="skills" value="JavaScript" /> JavaScript</label>
-                            <label><input type="checkbox" name="skills" value="C#" /> C#</label>
-                            <label><input type="checkbox" name="skills" value="PHP" /> PHP</label>
-                            <label><input type="checkbox" name="skills" value="Ruby" /> Ruby</label>
-                            <label><input type="checkbox" name="skills" value="Swift" /> Swift</label>
-                            <label><input type="checkbox" name="skills" value="Go" /> Go</label>
-                        </div>
+                <div class="field" id="skills-section">
+                    <div class="label">Select Your Skills</div>
+                    <div class="checkbox-group">
+                        {% for skill in skills %}
+                            <label><input type="checkbox" name="skills" value="{{ skill.id }}" /> {{ skill.skill_name }}</label>
+                        {% endfor %}
                     </div>
+                </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

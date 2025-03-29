@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="../static/css/post_job.css">
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Post a New Job</h2>
+    <form method="POST" action="{{ url_for('post_job') }}">
+        <div class="form-group">
+            <label for="job_title">Job Title*</label>
+            <input type="text" class="form-control" id="job_title" name="job_title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="company">Company*</label>
+            <input type="text" class="form-control" id="company" name="company" required>
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location*</label>
+            <input type="text" class="form-control" id="location" name="location" required>
+        </div>
+
+        <div class="form-group">
+            <label for="job_type">Job Type*</label>
+            <select class="form-control" id="job_type" name="job_type" required>
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
+                <option value="Remote">Remote</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="salary">Salary (LPA)</label>
+            <input type="text" class="form-control" id="salary" name="salary">
+        </div>
+        <div class="form-group">
+            <label>Required Skills*</label>
+            <select class="form-control skill-select" name="required_skills" multiple required>
+                {% for skill in all_skills %}
+                <option value="{{ skill }}">{{ skill }}</option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple skills</small>
+        </div>
+
+
+</div>
+<div class="form-group">
+    <label for="description">Job Description*</label>
+    <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+</div>
+
+<button type="submit" class="btn btn-primary">Post Job</button>
+<a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+</div>
+<!-- Add Select2 for better multi-select UI -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.skill-select').select2({
+            placeholder: "Select required skills",
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}

@@ -1,30 +1,27 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, session, jsonify, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
 import os
 import re
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
-# Configuration
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret-key-here'
+# Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///resume_screening.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads/company_logos'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 
-# Initialize database
 db = SQLAlchemy(app)
 
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), nullable=False, unique=True)
+    username = db.Column(db.String(150), nullable=False, unique=True)  # Stores actual name
     email = db.Column(db.String(150), nullable=False, unique=True)
     phone = db.Column(db.String(15), nullable=True)
     password = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'admin', 'applicant', 'employer'
+    role = db.Column(db.Enum('admin', 'applicant', 'employer', name='user_roles'), nullable=False)
 
     employer = db.relationship('Employer', backref='user', uselist=False)
     applicant = db.relationship('Applicant', backref='user', uselist=False)
@@ -50,9 +47,8 @@ class Job(db.Model):
     salary = db.Column(db.String(50), nullable=True)
     description = db.Column(db.Text, nullable=False)
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id', ondelete='CASCADE'), nullable=False)
-    required_skills = db.Column(db.JSON)
-    posted_date = db.Column(db.DateTime, default=datetime.utcnow)
-
+    required_skills = db.Column(db.JSON) 
+    # Add cascade to the relationship
     applicants = db.relationship('AppliedJob', backref='job', lazy=True, cascade='all, delete-orphan')
 
 class Applicant(db.Model):
@@ -75,6 +71,8 @@ class AppliedJob(db.Model):
     application_date = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='pending')
 
+    applicant = db.relationship('Applicant', backref=db.backref('applied_jobs', lazy=True))
+
 class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     skill_name = db.Column(db.String(50), unique=True, nullable=False)
@@ -84,32 +82,7 @@ class ApplicantSkill(db.Model):
     applicant_id = db.Column(db.Integer, db.ForeignKey('applicant.id'), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey('skill.id'), nullable=False)
 
-# Create directories
-def create_dirs():
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
-    if not os.path.exists('static/resumes'):
-        os.makedirs('static/resumes')
-
-# Create default admin
-def create_default_admin():
-    if not User.query.filter_by(email='admin@resumescreening.com').first():
-        admin_user = User(
-            username='Admin',
-            email='admin@resumescreening.com',
-            password=generate_password_hash('admin123'),
-            role='admin'
-        )
-        db.session.add(admin_user)
-        db.session.commit()
-
-# Initialize database
-with app.app_context():
-    db.create_all()
-    create_dirs()
-    create_default_admin()
-
-# Home route
+# Routes
 @app.route('/')
 def home():
     return render_template('homepage.html')
@@ -517,22 +490,19 @@ def view_applicants(job_id):
     required_skills = set(job.required_skills or [])
     
     for application in applications:
-        applicant = Applicant.query.get(application.applicant_id)
-        user = User.query.get(applicant.user_id)
+        applicant = application.applicant
+        user = applicant.user
         
         # Get applicant's skills
         applicant_skills = set()
         for skill_rel in applicant.skills:
             skill = Skill.query.get(skill_rel.skill_id)
             if skill:
-                applicant_skills.add(skill.skill_name.strip().lower())
-        
-        # Normalize required skills
-        normalized_required_skills = {skill.strip().lower() for skill in required_skills}
+                applicant_skills.add(skill.skill_name)
         
         # Calculate match score
-        matched_skills = normalized_required_skills.intersection(applicant_skills)
-        score = (len(matched_skills) / len(normalized_required_skills) * 100) if normalized_required_skills else 0
+        matched_skills = required_skills.intersection(applicant_skills)
+        score = (len(matched_skills) / len(required_skills) * 100) if required_skills else 0
         
         applicants_with_scores.append({
             'application_id': application.id,

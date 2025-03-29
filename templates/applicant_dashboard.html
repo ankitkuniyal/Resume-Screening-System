@@ -22,18 +22,39 @@
         
         {% for job in job_postings %}
         <div class="job-card">
-            <h3>{{ job.job_title }}</h3>
-            <p><strong>Company:</strong> {{ job.company }}</p>
-            <p><strong>Location:</strong> {{ job.location }}</p>
-            <p><strong>Description:</strong> {{ job.description }}</p>
-            <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
-                <button type="submit" class="apply-btn">Apply Now</button>
-            </form>
+            <div class="job-summary">
+                <h3>{{ job.job_title }}</h3>
+                <p><strong>Salary:</strong> {{ job.salary if job.salary else 'Not specified' }}</p>
+                <button class="toggle-details-btn" onclick="toggleDetails(this)">View Details</button>
+            </div>
+            <div class="job-details" style="display: none;">
+                <p><strong>Company:</strong> {{ job.company }}</p>
+                <p><strong>Location:</strong> {{ job.location }}</p>
+                <p><strong>Job Type:</strong> {{ job.job_type }}</p>
+                <p><strong>Description:</strong> {{ job.description }}</p>
+                <p><strong>Required Skills:</strong> {{ ', '.join(job.required_skills) if job.required_skills else 'None' }}</p>
+                <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
+                    <button type="submit" class="apply-btn">Apply Now</button>
+                </form>
+            </div>
         </div>
         {% else %}
         <p>No recent job postings available.</p>
         {% endfor %}
     </section>
+
+    <script>
+        function toggleDetails(button) {
+            const details = button.parentElement.nextElementSibling;
+            if (details.style.display === "none") {
+                details.style.display = "block";
+                button.textContent = "Hide Details";
+            } else {
+                details.style.display = "none";
+                button.textContent = "View Details";
+            }
+        }
+    </script>
 
     <section id="applied_jobs">
         <h2>Jobs You Have Applied For</h2>
