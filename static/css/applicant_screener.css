@@ -439,3 +439,6 @@ td:last-child {
   transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
 }
+.circular-progress circle {
+  transition: stroke-dashoffset 1s ease-in-out;
+}
