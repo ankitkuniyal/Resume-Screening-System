@@ -61,9 +61,11 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ url_for('view_resume', applicant_id=applicant.applicant_id) }}" 
-                           class="btn btn-sm btn-info">View Resume</a>
+                        <!-- <a href="{{ url_for('view_resume', applicant_id=applicant.applicant_id) }}" 
+                           class="btn btn-sm btn-info">View Resume</a> -->
                         <div class="btn-group">
+                            <a href="{{ url_for('view_resume', applicant_id=applicant.applicant_id) }}" 
+                            class="btn btn-sm btn-info">View Resume</a>
                             <form method="POST" action="{{ url_for('update_application_status', application_id=applicant.application_id) }}" style="display: inline;">
                                 <input type="hidden" name="status" value="accepted">
                                 <button type="submit" class="btn btn-sm btn-success">Accept</button>
