@@ -53,7 +53,7 @@ class Job(db.Model):
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id', ondelete='CASCADE'), nullable=False)
     posted_date = db.Column(db.DateTime, default=datetime.utcnow)
     applicants = db.relationship('AppliedJob', backref='job', lazy=True, cascade='all, delete-orphan')
-    required_skills = db.Column(db.JSON) 
+    required_skills= db.Column(db.JSON) 
 
   
 
@@ -396,7 +396,7 @@ def post_job():
                 flash('Employer profile not found!', 'danger')
                 return redirect(url_for('employer_dashboard'))
 
-            # Create new job (skill names will be lowercased in Job.__init__)
+            # Create new job with required skills (stored in lowercase)
             new_job = Job(
                 job_title=job_title,
                 company=company,
@@ -405,7 +405,7 @@ def post_job():
                 salary=salary,
                 description=description,
                 employer_id=employer.id,
-                required_skills=required_skill_names
+                required_skills=[skill.lower() for skill in required_skill_names]  # Store lowercase for consistent matching
             )
 
             db.session.add(new_job)
@@ -419,9 +419,10 @@ def post_job():
             app.logger.error(f"Error posting job: {str(e)}")
 
     # GET request - show form
-    skills = Skill.query.with_entities(Skill.skill_name).all()
-    return render_template('post_job.html', 
-                         all_skills=[skill[0] for skill in skills])
+    skills = Skill.query.all()
+    return render_template('post_job.html', all_skills=skills)
+
+
 @app.route('/employer/applicants/<int:job_id>')
 def view_applicants(job_id):
     # Authentication check
@@ -437,28 +438,28 @@ def view_applicants(job_id):
         flash('Unauthorized to view applicants for this job', 'danger')
         return redirect(url_for('employer_dashboard'))
     
-    # Get all applications for this job
-    applications = AppliedJob.query.filter_by(job_id=job_id).all()
+    # Get all applications for this job with applicant details
+    applications = (db.session.query(AppliedJob, Applicant, User)
+                   .join(Applicant, AppliedJob.applicant_id == Applicant.id)
+                   .join(User, Applicant.user_id == User.id)
+                   .filter(AppliedJob.job_id == job_id)
+                   .all())
+    
     applicants_with_scores = []
+    required_skills_lower = {skill.lower() for skill in (job.required_skills or [])}
     
-    # Get required skills (already stored in lowercase)
-    required_skill_names = set(job.required_skills or [])
-    
-    for application in applications:
-        applicant = Applicant.query.get(application.applicant_id)
-        if not applicant:
-            continue
-            
-        user = applicant.user
+    for application, applicant, user in applications:
+        # Get applicant's skills (converted to lowercase)
+        applicant_skills_lower = {skill.skill.skill_name.lower() for skill in applicant.skills}
         
-        # Get applicant's skills (convert to lowercase for matching)
-        applicant_skill_names = {skill.skill.skill_name.lower() for skill in applicant.skills}
+        # Calculate exact matches
+        exact_matches = required_skills_lower & applicant_skills_lower
+        score = (len(exact_matches) / len(required_skills_lower) * 100) if required_skills_lower else 0
         
-        # Calculate match percentage
-        matched_skill_names = required_skill_names & applicant_skill_names
-        score = (len(matched_skill_names) / len(required_skill_names) * 100) if required_skill_names else 0
+        # Get original skill names for display (from Skill table)
+        matched_skill_objects = [skill for skill in applicant.skills 
+                                if skill.skill.skill_name.lower() in exact_matches]
         
-        # Prepare applicant data with score
         applicants_with_scores.append({
             'application_id': application.id,
             'applicant_id': applicant.id,
@@ -469,20 +470,22 @@ def view_applicants(job_id):
             'experience_years': applicant.experience_years,
             'application_date': application.application_date,
             'status': application.status,
-            'matched_skills': list(matched_skill_names),  # Original case from Skill model
+            'matched_skills': [skill.skill.skill_name for skill in matched_skill_objects],  # Original case
             'score': round(score, 2),
-            'total_required_skills': len(required_skill_names),
-            'matched_skills_count': len(matched_skill_names)
+            'total_required_skills': len(required_skills_lower),
+            'matched_skills_count': len(exact_matches),
+            'resume_url': applicant.resume  # Corrected to use the existing attribute
         })
     
-    # Sorting
+    # Sort by best matches first (highest score) by default
     sort_order = request.args.get('sort', 'desc')
     applicants_with_scores.sort(key=lambda x: x['score'], reverse=(sort_order == 'desc'))
     
     return render_template('applicant_screener.html',
                          job=job,
                          applicants=applicants_with_scores,
-                         sort_order=sort_order)
+                         sort_order=sort_order,
+                         now=datetime.utcnow())
 
 @app.route('/application/update/<int:application_id>', methods=['POST'])
 def update_application_status(application_id):
@@ -684,4 +687,4 @@ def delete_job(job_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=3000)
+    app.run(debug=True, port=3200)

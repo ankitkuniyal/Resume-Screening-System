@@ -75,18 +75,18 @@ def create_sample_data():
         for i, title in enumerate(job_titles):
             # Assign 3-5 random skills to each job
             num_skills = random.randint(3, min(5, len(skills)))
-            required_skills = random.sample(skills, num_skills)
+            required_skills = [skill.skill_name for skill in random.sample(skills, num_skills)]
             
             job = Job(
-                job_title=title,
-                company='TechCorp',
-                location=random.choice(['Remote', 'New York', 'San Francisco', 'Austin']),
-                job_type=random.choice(['Full-time', 'Contract', 'Part-time']),
-                salary=f'${random.randint(80, 120)}k - ${random.randint(100, 150)}k',
-                description=job_descriptions[i],
-                employer_id=employer.id,
-                required_skill_ids=[s.id for s in required_skills],
-                posted_date=datetime.utcnow()
+            job_title=title,
+            company='TechCorp',
+            location=random.choice(['Remote', 'New York', 'San Francisco', 'Austin']),
+            job_type=random.choice(['Full-time', 'Contract', 'Part-time']),
+            salary=f'${random.randint(80, 120)}k - ${random.randint(100, 150)}k',
+            description=job_descriptions[i],
+            employer_id=employer.id,
+            required_skills=required_skills,  # Store skill names as JSON
+            posted_date=datetime.utcnow()
             )
             db.session.add(job)
             jobs.append(job)

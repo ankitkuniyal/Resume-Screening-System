@@ -38,12 +38,10 @@
         </div>
         <div class="form-group">
             <label>Required Skills*</label>
-            <select class="form-control select2-multi" name="required_skills" multiple="multiple" required>
-                {% if all_skills %}
-                    {% for skill in all_skills %}
-                        <option value="{{ skill.skill_name }}">{{ skill.skill_name }}</option>
-                    {% endfor %}
-                {% endif %}
+            <select class="form-control skill-select" name="required_skills" multiple="multiple" required>
+            {% for skill in all_skills %}
+                <option value="{{ skill.skill_name }}">{{ skill.skill_name }}</option>
+            {% endfor %}
             </select>
             <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple skills</small>
         </div>
