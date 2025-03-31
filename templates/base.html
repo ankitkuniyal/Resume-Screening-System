@@ -4,59 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}My Website{% endblock %}</title>
-    <style>
-        /* Flash message styling */
-        .flash-messages {
-            margin: 10px 0;
-            padding: 0;
-            list-style: none;
-        }
-        
-        .flash-message {
-            padding: 12px 20px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            font-weight: 500;
-            position: relative;
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        /* Different categories of flash messages */
-        .flash-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-        
-        .flash-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border-left: 4px solid #17a2b8;
-        }
-        
-        .flash-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .flash-error, .flash-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-        
-        /* Animation for flash messages */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-    </style>
+    <link rel="stylesheet" href="../static/css/base.css" />
     {% block styles %}
     {% endblock %}
 </head>
