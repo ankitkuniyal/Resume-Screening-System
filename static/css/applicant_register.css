@@ -1,7 +1,7 @@
 :root {
-  --primary-color: #512da8;
-  --primary-color-light: #5c6bc0;
-  --background-color: #c9d6ff;
+  --primary-color: #0540be;
+  --primary-color-light: #679ded;
+  --background-color: #9ab2fe;
   --text-primary: #333;
   --text-secondary: #555;
   --white: #ffffff;
@@ -207,37 +207,140 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(81, 45, 168, 0.1);
 }
 
-/* Checkbox styling */
+/* Page 4: Skills & Login Information - Enhanced Styles */
+.page[data-page="4"] {
+  padding-top: 1rem;
+}
+
+/* Skills Section */
+#skills-section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  border-radius: var(--radius-default);
+  border: 1px solid #e2e8f0;
+}
+
+#skills-section .label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+#skills-section .label::before {
+  content: "▹";
+  margin-right: 0.5rem;
+  color: var(--primary-color-light);
+}
+
 .checkbox-group {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
-  margin: 1rem 0 2rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.8rem;
+  margin-top: 1.2rem;
 }
 
 .checkbox-group label {
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: var(--radius-default);
+  padding: 0.7rem 1rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: calc(var(--radius-default) - 0.2rem);
   transition: var(--transition-smooth);
-  background-color: #f8f9fa;
+  font-size: 0.95rem;
 }
 
 .checkbox-group label:hover {
-  background-color: #eef1f6;
+  background-color: #f1f5f9;
+  border-color: var(--primary-color-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-subtle);
 }
 
 .checkbox-group input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 18px;
   height: 18px;
-  margin-right: 0.5rem;
-  cursor: pointer;
+  border: 2px solid #cbd5e0;
+  border-radius: 4px;
+  margin-right: 0.7rem;
+  position: relative;
+  transition: var(--transition-smooth);
 }
 
-/* Navigation buttons */
+.checkbox-group input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-group input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 0.8rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Login Information Section */
+.page[data-page="4"] .title:nth-of-type(2) {
+  margin-top: 2.5rem;
+}
+
+.login-fields {
+  background-color: #f8fafc;
+  padding: 1.5rem;
+  border-radius: var(--radius-default);
+  border: 1px solid #e2e8f0;
+  margin-top: 1.5rem;
+}
+
+.password-field-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.password-requirements {
+  font-size: 0.85rem;
+  color: #cf385c;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--primary-color-light);
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #cf385c;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--primary-color-light);
+}
+
+/* Enhanced input focus states */
+.page[data-page="4"] input:focus {
+  background-color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.15);
+}
+
+/* Form buttons */
 .form-buttons {
   display: flex;
   justify-content: space-between;
@@ -282,41 +385,69 @@ button, .btns button {
   box-shadow: 0 6px 12px rgba(81, 45, 168, 0.3);
 }
 
-.btns {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 2rem;
+/* Page 4 specific buttons */
+.page[data-page="4"] .form-buttons {
+  margin-top: 3rem;
+  justify-content: space-between;
+}
+
+.page[data-page="4"] .submit {
+  background: linear-gradient(to right, var(--primary-color), #1a365d);
+  flex-grow: 1;
+  max-width: 200px;
 }
 
 /* Responsive adjustments */
+@media (min-width: 768px) {
+  .password-field-group {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
-      padding: 1rem;
+    padding: 1rem;
   }
   
   .form-content {
-      padding: 1.5rem;
+    padding: 1.5rem;
   }
   
   .fields-grid {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
   
   .progress-bar {
-      padding: 1rem;
+    padding: 1rem;
   }
   
   .progress-step {
-      width: 30px;
-      height: 30px;
-      font-size: 0.8rem;
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
   }
   
   .progress-label {
-      font-size: 0.7rem;
+    font-size: 0.7rem;
   }
   
   .checkbox-group {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .checkbox-group {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .page[data-page="4"] .form-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .page[data-page="4"] .submit {
+    max-width: 100%;
+    order: -1;
   }
 }

@@ -38,32 +38,32 @@
                     
                     <div class="fields-grid">
                         <div class="field">
-                            <div class="label">Full Name</div>
-                            <input type="text" name="name" required placeholder="Enter your full name" />
+                            <label for="name" class="label">Full Name</label>
+                            <input type="text" name="name" id="name" required placeholder="Enter your full name" />
                         </div>
                         
                         <div class="field">
-                            <div class="label">Email Address</div>
-                            <input type="email" name="email" required placeholder="Enter your email address" />
+                            <label for="email" class="label">Email Address</label>
+                            <input type="email" name="email" id="email" required placeholder="Enter your email address" />
                         </div>
                     </div>
                     
                     <div class="fields-grid">
                         <div class="field">
-                            <div class="label">Mobile Number</div>
-                            <input type="tel" name="phone" required placeholder="Enter your mobile number" pattern="[0-9]+" title="Only numbers are allowed" />
+                            <label for="phone" class="label">Mobile Number</label>
+                            <input type="tel" name="phone" id="phone" required placeholder="Enter your mobile number" pattern="[0-9]+" title="Only numbers are allowed" />
                         </div>
                         
                         <div class="field">
-                            <div class="label">Date of Birth</div>
-                            <input type="date" name="dob" required max="{{ max_dob }}" />
+                            <label for="dob" class="label">Date of Birth</label>
+                            <input type="date" name="dob" id="dob" required max="{{ max_dob }}" />
                         </div>
                     </div>
                     
                     <div class="fields-grid">
                         <div class="field">
-                            <div class="label">Gender</div>
-                            <select name="gender" required>
+                            <label for="gender" class="label">Gender</label>
+                            <select name="gender" id="gender" required>
                                 <option value="" disabled selected>Select gender</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -72,8 +72,8 @@
                         </div>
                         
                         <div class="field">
-                            <div class="label">Address</div>
-                            <input type="text" name="address" required placeholder="Enter your full address" />
+                            <label for="address" class="label">Address</label>
+                            <input type="text" name="address" id="address" required placeholder="Enter your full address" />
                         </div>
                     </div>
                     
@@ -88,8 +88,8 @@
                     
                     <div class="fields-grid">
                         <div class="field">
-                            <div class="label">Highest Qualification</div>
-                            <select name="highest_qualification" required>
+                            <label for="highest_qualification" class="label">Highest Qualification</label>
+                            <select name="highest_qualification" id="highest_qualification" required>
                                 <option value="" disabled selected>Select your qualification</option>
                                 <option value="High School">High School</option>
                                 <option value="Diploma">Diploma</option>
@@ -100,8 +100,8 @@
                         </div>
                         
                         <div class="field">
-                            <div class="label">Field Of Study</div>
-                            <select name="field_of_study" required>
+                            <label for="field_of_study" class="label">Field Of Study</label>
+                            <select name="field_of_study" id="field_of_study" required>
                                 <option value="" disabled selected>Select your field of study</option>
                                 <option value="Computer Science">Computer Science</option>
                                 <option value="Engineering">Engineering</option>
@@ -127,8 +127,8 @@
                     <div class="title">Work Experience</div>
                     
                     <div class="field">
-                        <div class="label">Years of Experience</div>
-                        <select name="experience_years" required>
+                        <label for="experience_years" class="label">Years of Experience</label>
+                        <select name="experience_years" id="experience_years" required>
                             <option value="" disabled selected>Select Years of Experience</option>
                             <option value="0">0 (Fresher)</option>
                             <option value="1">1 Year</option>
@@ -145,50 +145,45 @@
                     </div>
                 </div>
                 
-                <!-- Page 4: Skills and Login -->
-                <div class="field" id="skills-section">
-                    <div class="label">Select Your Skills</div>
-                    <div class="checkbox-group">
-                        {% for skill in skills %}
-                            <label><input type="checkbox" name="skills" value="{{ skill.id }}" /> {{ skill.skill_name }}</label>
-                        {% endfor %}
+                <!-- Page 4: Skills and Login - Now always shows skills section -->
+                <div class="page" data-page="4">
+                    <div class="title">Skills & Qualifications</div>
+                    
+                    <div class="field" id="skills-section">
+                        <div class="label">Select Your Skills</div>
+                        <div class="checkbox-group">
+                            {% for skill in skills %}
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="skills" value="{{ skill.id }}" /> 
+                                    {{ skill.skill_name }}
+                                </label>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const fieldOfStudySelect = document.querySelector('select[name="field_of_study"]');
-    const skillsSection = document.getElementById('skills-section');
-
-    fieldOfStudySelect.addEventListener('change', function() {
-        if (this.value === 'Computer Science') {
-            skillsSection.style.display = 'block';
-        } else {
-            skillsSection.style.display = 'none';
-        }
-    });
-});
-</script>
                     
                     <div class="title">Login Information</div>
                     
                     <div class="fields-grid">
                         <div class="field">
-                            <div class="label">Email Address</div>
-                            <input type="email" name="login_email" required placeholder="Enter your email address" />
-                            <small style="display: block; margin-top: 5px; color: #666;">This will be used for login. Make sure it matches your contact email.</small>
+                            <label for="login_email" class="label">Email Address</label>
+                            <input type="email" name="login_email" id="login_email" required placeholder="Enter your email address" />
+                            <small class="hint">This will be used for login. Make sure it matches your contact email.</small>
                         </div>
                     </div>
                     
                     <div class="fields-grid">
                         <div class="field">
-                            <div class="label">Password</div>
+                            <label for="password" class="label">Password</label>
                             <input type="password" name="password" id="password" required placeholder="Create a strong password" />
+                            <div class="password-requirements">
+                                Password must be at least 8 characters with 1 number and 1 special character
+                            </div>
                         </div>
                         
                         <div class="field">
-                            <div class="label">Confirm Password</div>
+                            <label for="confirm_password" class="label">Confirm Password</label>
                             <input type="password" name="confirm_password" id="confirm_password" required placeholder="Confirm your password" />
+                            <div id="password-match-error" class="error-message"></div>
                         </div>
                     </div>
                     
@@ -204,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Form navigation
     const pages = document.querySelectorAll('.page');
     const nextBtns = document.querySelectorAll('.btn-next');
     const prevBtns = document.querySelectorAll('.btn-prev');
@@ -222,14 +218,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             inputs.forEach(input => {
                 if (!input.value) {
-                    input.style.borderColor = 'red';
+                    input.classList.add('error');
                     isValid = false;
                 } else {
-                    input.style.borderColor = '';
+                    input.classList.remove('error');
                 }
             });
             
-            if (!isValid) return;
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = currentPage.querySelector('.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
             
             // Proceed to next page
             currentPage.classList.remove('active');
@@ -263,16 +266,48 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form validation on submit
     const form = document.getElementById('registration-form');
-    form.addEventListener('submit', function(e) {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm_password').value;
-        
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            document.getElementById('confirm_password').style.borderColor = 'red';
-            alert('Passwords do not match!');
-        }
-    });
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validate all required fields
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    field.classList.add('error');
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                }
+            });
+            
+            // Password validation
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const errorElement = document.getElementById('password-match-error');
+            
+            if (password.value !== confirmPassword.value) {
+                password.classList.add('error');
+                confirmPassword.classList.add('error');
+                errorElement.textContent = 'Passwords do not match!';
+                errorElement.style.display = 'block';
+                isValid = false;
+            } else {
+                password.classList.remove('error');
+                confirmPassword.classList.remove('error');
+                errorElement.style.display = 'none';
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                // Scroll to first error
+                const firstError = form.querySelector('.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
