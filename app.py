@@ -279,13 +279,70 @@ def applicant_dashboard():
         flash('Profile not found!', 'danger')
         return redirect(url_for('login'))
 
-    job_postings = Job.query.all()
-    applied_jobs = AppliedJob.query.filter_by(applicant_id=applicant.id).all()
+    # Get all job postings with employer info
+    job_postings = Job.query.options(
+        db.joinedload(Job.employer)
+    ).all()
+    
+    # Get applied jobs with their status
+    applied_jobs = AppliedJob.query.filter_by(
+        applicant_id=applicant.id
+    ).options(
+        db.joinedload(AppliedJob.job)
+    ).all()
+    
+    # Create set of applied job IDs for quick lookup
+    applied_job_ids = {aj.job_id for aj in applied_jobs}
+    
+    # Get applicant's skills (converted to lowercase for consistent matching)
+    applicant_skills_lower = {skill.skill.skill_name.lower() for skill in applicant.skills}
+    
+    # Enhance each job posting with match data
+    for job in job_postings:
+        # Calculate match score using the same logic as view_applicants
+        required_skills_lower = {skill.lower() for skill in (job.required_skills or [])}
+        exact_matches = required_skills_lower & applicant_skills_lower
+        job.match_score = round((len(exact_matches) / len(required_skills_lower) * 100) if required_skills_lower else 0)
+        
+        # Get original skill names for display (from Skill table)
+        matched_skill_objects = [skill for skill in applicant.skills 
+                               if skill.skill.skill_name.lower() in exact_matches]
+        job.matched_skills = [skill.skill.skill_name for skill in matched_skill_objects]
+        job.total_required_skills = len(required_skills_lower)
+        job.matched_skills_count = len(exact_matches)
+        
+        # Add application status if applied
+        if job.id in applied_job_ids:
+            job.application_status = next(
+                (aj.status for aj in applied_jobs if aj.job_id == job.id),
+                'pending'
+            )
+        else:
+            job.application_status = None
+
+    # Sorting options
+    sort_by = request.args.get('sort', 'match')
+    if sort_by == 'date':
+        job_postings.sort(key=lambda x: x.posted_date, reverse=True)
+    elif sort_by == 'salary':
+        def get_salary(job):
+            if not job.salary:
+                return 0
+            try:
+                return int(job.salary.split('k')[0].replace('$', '').split('-')[0])
+            except:
+                return 0
+        job_postings.sort(key=get_salary, reverse=True)
+    else:  # Default sort by match score
+        job_postings.sort(key=lambda x: x.match_score, reverse=True)
 
     return render_template('applicant_dashboard.html',
-                         applicant_name=user.username,
+                         applicant=applicant,
+                         user=user,
                          job_postings=job_postings,
-                         applied_jobs=applied_jobs)
+                         applied_job_ids=applied_job_ids,
+                         sort_by=sort_by,
+                         now=datetime.utcnow())
 
 @app.route('/employer/dashboard')
 def employer_dashboard():
@@ -392,7 +449,7 @@ def post_job():
                 salary=salary,
                 description=description,
                 employer_id=employer.id,
-                required_skills=[skill.lower() for skill in required_skill_names]  # Store lowercase for consistent matching
+                required_skills=[skill for skill in required_skill_names]  
             )
 
             db.session.add(new_job)

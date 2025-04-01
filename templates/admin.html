@@ -177,7 +177,6 @@
                         <th>Salary</th>
                         <th>Employer</th>
                         <th>Required Skills</th>
-                        <th>Applications</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -208,15 +207,6 @@
                             {% else %}
                                 N/A
                             {% endif %}
-                        </td>
-                        <td>
-                            {% set count = 0 %}
-                            {% for app in applied_jobs %}
-                                {% if app['job_id'] == job['id'] %}
-                                    {% set count = count + 1 %}
-                                {% endif %}
-                            {% endfor %}
-                            {{ count }}
                         </td>
                     </tr>
                     {% endfor %}
