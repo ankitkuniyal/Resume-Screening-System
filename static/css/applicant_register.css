@@ -252,6 +252,7 @@ select:focus {
   border-radius: calc(var(--radius-default) - 0.2rem);
   transition: var(--transition-smooth);
   font-size: 0.95rem;
+  
 }
 
 .checkbox-group label:hover {
@@ -271,6 +272,7 @@ select:focus {
   margin-right: 0.7rem;
   position: relative;
   transition: var(--transition-smooth);
+ 
 }
 
 .checkbox-group input[type="checkbox"]:checked {

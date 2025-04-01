@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), nullable=False, unique=True)
+    username = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), nullable=False, unique=True)
     phone = db.Column(db.String(15), nullable=True)
     password = db.Column(db.String(256), nullable=False)
@@ -37,7 +37,6 @@ class Employer(db.Model):
     website = db.Column(db.String(255), nullable=True)
     address = db.Column(db.String(255), nullable=False)
     contact = db.Column(db.String(15), nullable=False)
-    linkedin = db.Column(db.String(255), nullable=True)
     company_logo = db.Column(db.String(255), nullable=True)
 
     jobs = db.relationship('Job', backref='employer', lazy=True)
@@ -54,10 +53,6 @@ class Job(db.Model):
     posted_date = db.Column(db.DateTime, default=datetime.utcnow)
     applicants = db.relationship('AppliedJob', backref='job', lazy=True, cascade='all, delete-orphan')
     required_skills= db.Column(db.JSON) 
-
-  
-
-    
 
 class Applicant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -125,10 +120,6 @@ with app.app_context():
     db.create_all()
     create_dirs()
     initialize_data()
-
-# ======================
-# ROUTES
-# ======================
 
 # Home route
 @app.route('/')
@@ -245,7 +236,6 @@ def register_employer():
         industry = request.form['industry']
         address = request.form['address']
         contact = request.form['contact']
-        linkedin = request.form['linkedin']
         password = request.form['login_password']
 
         if User.query.filter_by(email=email).first():
@@ -269,7 +259,6 @@ def register_employer():
             industry=industry,
             address=address,
             contact=contact,
-            linkedin=linkedin
         )
         db.session.add(new_employer)
         db.session.commit()
@@ -608,7 +597,6 @@ def delete_applicant_skill(applicant_skill_id):
             'message': f'Error deleting applicant skill: {str(e)}'
         }), 500
 
-# Admin utility routes
 @app.route('/delete_database', methods=['POST'])
 def delete_database():
     if 'user_id' in session and session['role'] == 'admin':
@@ -623,8 +611,6 @@ def delete_database():
         flash('Unauthorized!', 'danger')
     return redirect(url_for('admin_dashboard'))
 
-
-# Resume handling
 @app.route('/applicant/resume/<int:applicant_id>')
 def view_resume(applicant_id):
     if 'user_id' not in session or session['role'] != 'employer':
@@ -653,6 +639,7 @@ def view_resume(applicant_id):
         return redirect(request.referrer or url_for('employer_dashboard'))
     
     return send_from_directory(os.path.join(app.root_path, 'static/resumes'), applicant.resume)
+
 @app.route('/delete_job/<int:job_id>', methods=['GET','POST'])
 def delete_job(job_id):
     # Authentication check
