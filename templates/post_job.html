@@ -3,36 +3,63 @@
 <link rel="stylesheet" href="../static/css/post_job.css">
 {% endblock %}
 {% block content %}
-<div class="container mt-5">
-    <div class="job-form-wrapper">
-        <div class="form-header">
-            <h2>Post a New Job</h2>
-            <p class="form-subtitle">Complete all required fields marked with an asterisk (*)</p>
+<header class="dashboard-header">
+    <div class="header-content">
+        <h1>Post a New Opportunity</h1>
+        <p class="welcome-message">Welcome back! Let's find your perfect candidate.</p>
+    </div>
+    <nav class="dashboard-nav">
+        <ul>
+            <li><a href="{{ url_for('employer_dashboard') }}" class="nav-link">Dashboard</a></li>
+            <li><a href="{{ url_for('post_job') }}" class="nav-link active">Post Job</a></li>
+            <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="job-posting-container">
+    <section class="form-intro">
+        <h2 class="visually-hidden">Job Posting Form</h2>
+        <div class="intro-card">
+            <svg class="intro-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17 11V3H7v4H3v14h8v-4h2v4h8V11h-4zM7 19H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm4 4H9v-2h2v2zm0-4H9V9h2v2zm0-4H9V5h2v2zm4 8h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm4 12h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+            </svg>
+            <p>Complete this form to post your job listing. We'll help you attract qualified candidates.</p>
         </div>
-        
-        <form method="POST" action="{{ url_for('post_job') }}" class="job-posting-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="job_title">Job Title</label>
-                    <input type="text" class="form-control" id="job_title" name="job_title" placeholder="e.g. Senior Software Engineer" required>
-                </div>
+    </section>
 
-                <div class="form-group">
-                    <label for="company">Company</label>
-                    <input type="text" class="form-control" id="company" name="company" placeholder="Your company name" required>
+    <form method="POST" action="{{ url_for('post_job') }}" class="job-form">
+        <!-- Job Basics Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">
+                <span class="legend-number">1</span>
+                Job Basics
+            </legend>
+            
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="job_title" class="field-label">Job Title*</label>
+                    <input type="text" id="job_title" name="job_title" class="text-input" 
+                           placeholder="e.g. Senior Frontend Developer" required>
+                    <p class="field-hint">Be specific but concise</p>
                 </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="location">Location</label>
-                    <input type="text" class="form-control" id="location" name="location" placeholder="e.g. New York, NY or Remote" required>
+                
+                <div class="form-field">
+                    <label for="company" class="field-label">Company*</label>
+                    <input type="text" id="company" name="company" class="text-input" 
+                           placeholder="Your company name" required>
                 </div>
-
-                <div class="form-group">
-                    <label for="job_type">Job Type</label>
-                    <select class="form-control" id="job_type" name="job_type" required>
-                        <option value="" disabled selected>Select job type</option>
+                
+                <div class="form-field">
+                    <label for="location" class="field-label">Location*</label>
+                    <input type="text" id="location" name="location" class="text-input" 
+                           placeholder="e.g. Bangalore or Remote" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="job_type" class="field-label">Job Type*</label>
+                    <select id="job_type" name="job_type" class="select-input" required>
+                        <option value="" disabled selected>Select an option</option>
                         <option value="Full-time">Full-time</option>
                         <option value="Part-time">Part-time</option>
                         <option value="Contract">Contract</option>
@@ -40,50 +67,80 @@
                         <option value="Remote">Remote</option>
                     </select>
                 </div>
+                
+                <div class="form-field">
+                    <label for="salary" class="field-label">Salary Range</label>
+                    <input type="text" id="salary" name="salary" class="text-input" 
+                           placeholder="e.g. 12-18 LPA or Negotiable">
+                </div>
             </div>
+        </fieldset>
 
-            <div class="form-group">
-                <label for="salary">Salary (LPA)</label>
-                <input type="text" class="form-control" id="salary" name="salary" placeholder="e.g. 10-15 or Competitive">
-            </div>
+        <!-- Skills Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">
+                <span class="legend-number">2</span>
+                Required Skills
+            </legend>
             
-            <div class="form-group required-skills-section">
-                <label>Required Skills</label>
-                <p class="skills-hint">Select all that apply</p>
-                <div class="skills-checkbox-container">
+            <div class="skills-container">
+                <p class="section-description">Select the key skills needed for this position:</p>
+                
+                <div class="skills-grid">
                     {% for skill in all_skills %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="required_skills" id="skill-{{ loop.index }}" value="{{ skill.skill_name }}">
-                        <label class="form-check-label" for="skill-{{ loop.index }}">
+                    <div class="skill-option">
+                        <input type="checkbox" name="required_skills" id="skill-{{ loop.index }}" 
+                               value="{{ skill.skill_name }}" class="skill-checkbox">
+                        <label for="skill-{{ loop.index }}" class="skill-label">
                             {{ skill.skill_name }}
                         </label>
                     </div>
                     {% endfor %}
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label for="description">Job Description</label>
-                <p class="description-hint">Include key responsibilities, requirements, and benefits</p>
-                <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe the role, responsibilities, qualifications, and any other relevant details..." required></textarea>
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Post Job</button>
-                <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
-    </div>
-</div>
+        </fieldset>
 
-<!-- Add Select2 for better multi-select UI -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <!-- Description Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">
+                <span class="legend-number">3</span>
+                Job Description
+            </legend>
+            
+            <div class="form-field">
+                <label for="description" class="field-label">Description*</label>
+                <textarea id="description" name="description" class="textarea-input" rows="8" 
+                          placeholder="Describe the role, responsibilities, and qualifications..." required></textarea>
+                <div class="description-tips">
+                    <p><strong>Tips for a great description:</strong></p>
+                    <ul>
+                        <li>Start with a brief overview of the role</li>
+                        <li>List key responsibilities in bullet points</li>
+                        <li>Specify must-have qualifications</li>
+                        <li>Include company culture/benefits</li>
+                    </ul>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="submit-button">
+                <span>Post Job</span>
+                <svg viewBox="0 0 24 24" class="button-icon">
+                    <path d="M3 20v-6l8-2-8-2V4l19 8-19 8z"/>
+                </svg>
+            </button>
+            <a href="{{ url_for('employer_dashboard') }}" class="cancel-button">Cancel</a>
+        </div>
+    </form>
+</main>
+
 <script>
-    $(document).ready(function () {
-        $('.skill-select').select2({
-            placeholder: "Select required skills",
-            allowClear: true
+    // Add interactive enhancements
+    document.querySelectorAll('.skill-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            this.parentNode.classList.toggle('skill-selected', this.checked);
         });
     });
 </script>
