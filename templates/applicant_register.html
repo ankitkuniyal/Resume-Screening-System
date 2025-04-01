@@ -173,8 +173,24 @@
                         <div class="field">
                             <label for="login_email" class="label">Email Address</label>
                             <input type="email" name="login_email" id="login_email" required placeholder="Enter your email address" />
-                            <small class="hint">This will be used for login. Make sure it matches your contact email.</small>
+                            <small class="hint">This will be used for login.</small>
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const contactEmail = document.getElementById('email');
+                                const loginEmail = document.getElementById('login_email');
+
+                                // Sync email fields
+                                const syncEmails = (source, target) => {
+                                    source.addEventListener('input', () => {
+                                        target.value = source.value;
+                                    });
+                                };
+
+                                syncEmails(contactEmail, loginEmail);
+                                syncEmails(loginEmail, contactEmail);
+                            });
+                        </script>
                     </div>
                     
                     <div class="fields-grid">

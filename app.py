@@ -35,7 +35,6 @@ class Employer(db.Model):
     website = db.Column(db.String(255), nullable=True)
     address = db.Column(db.String(255), nullable=False)
     contact = db.Column(db.String(15), nullable=False)
-    company_logo = db.Column(db.String(255), nullable=True)
 
     jobs = db.relationship('Job', backref='employer', lazy=True)
 
@@ -232,6 +231,7 @@ def register_employer():
         address = request.form['address']
         contact = request.form['contact']
         password = request.form['login_password']
+        website = request.form['website']
 
         if User.query.filter_by(email=email).first():
             flash('Email already exists!', 'danger')
@@ -243,7 +243,8 @@ def register_employer():
             username=name,
             email=email,
             password=hashed_password,
-            role='employer'
+            role='employer',
+            phone=contact
         )
         db.session.add(new_user)
         db.session.commit()
@@ -254,6 +255,7 @@ def register_employer():
             industry=industry,
             address=address,
             contact=contact,
+            website=website
         )
         db.session.add(new_employer)
         db.session.commit()
@@ -571,25 +573,6 @@ def delete_skill(skill_id):
         return jsonify({
             'success': False,
             'message': f'Error deleting skill: {str(e)}'
-        }), 500
-
-@app.route('/delete_applicant_skill/<int:applicant_skill_id>', methods=['DELETE'])
-def delete_applicant_skill(applicant_skill_id):
-    try:
-        applicant_skill = ApplicantSkill.query.get_or_404(applicant_skill_id)
-        db.session.delete(applicant_skill)
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Applicant skill association deleted successfully'
-        }), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({
-            'success': False,
-            'message': f'Error deleting applicant skill: {str(e)}'
         }), 500
 
 @app.route('/delete_database', methods=['POST'])

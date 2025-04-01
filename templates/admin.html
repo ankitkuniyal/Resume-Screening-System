@@ -334,7 +334,6 @@
                     <th>ID</th>
                     <th>Applicant</th>
                     <th>Skill</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -358,11 +357,6 @@
                                 {{ skill['skill_name'] }}
                             {% endif %}
                         {% endfor %}
-                    </td>
-                    <td class="actions">
-                        <button class="btn btn-delete" onclick="confirmDeleteApplicantSkill({{ as_['id'] }})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
                     </td>
                 </tr>
                 {% endfor %}
