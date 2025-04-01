@@ -1,0 +1,92 @@
+/* Flash Messages Container */
+.flash-messages {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    margin: 0;
+    padding: 10px 0;
+    list-style: none;
+    text-align: center;
+    transition: margin-top 0.3s ease, opacity 0.5s ease-out;
+    pointer-events: none;
+}
+
+/* Flash Message Items */
+.flash-message {
+    display: inline-block;
+    margin: 5px;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    pointer-events: auto;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Flash Message Types */
+.flash-success, .success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.flash-info, .info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+.flash-warning, .warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+.flash-error, .flash-danger, .danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+/* Alternative styling for solid-colored messages */
+.solid-style .flash-message.success, 
+.solid-style .flash-message.flash-success {
+    background-color: #4caf50;
+    color: white;
+    border-left: none;
+}
+
+.solid-style .flash-message.info, 
+.solid-style .flash-message.flash-info {
+    background-color: #2196f3;
+    color: white;
+    border-left: none;
+}
+
+.solid-style .flash-message.danger, 
+.solid-style .flash-message.flash-error, 
+.solid-style .flash-message.flash-danger {
+    background-color: #f44336;
+    color: white;
+    border-left: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Hide flash messages */
+.flash-messages.hide {
+    opacity: 0;
+    pointer-events: none;
+}
