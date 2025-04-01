@@ -291,8 +291,6 @@ def applicant_dashboard():
         db.joinedload(AppliedJob.job)
     ).all()
     
-    # Create set of applied job IDs for quick lookup
-    applied_job_ids = {aj.job_id for aj in applied_jobs}
     
     # Get applicant's skills (converted to lowercase for consistent matching)
     applicant_skills_lower = {skill.skill.skill_name.lower() for skill in applicant.skills}
@@ -312,7 +310,7 @@ def applicant_dashboard():
         job.matched_skills_count = len(exact_matches)
         
         # Add application status if applied
-        if job.id in applied_job_ids:
+        if job.id in applied_jobs:
             job.application_status = next(
                 (aj.status for aj in applied_jobs if aj.job_id == job.id),
                 'pending'
@@ -337,10 +335,11 @@ def applicant_dashboard():
         job_postings.sort(key=lambda x: x.match_score, reverse=True)
 
     return render_template('applicant_dashboard.html',
-                         applicant=applicant,
+                        applicant_name=user.username,
+                        applicant=applicant,
                          user=user,
                          job_postings=job_postings,
-                         applied_job_ids=applied_job_ids,
+                         applied_jobs=applied_jobs,
                          sort_by=sort_by,
                          now=datetime.utcnow())
 

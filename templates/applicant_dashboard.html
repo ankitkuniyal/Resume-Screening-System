@@ -9,7 +9,7 @@
     <h1>Welcome, {{ applicant_name }}!</h1>
     <nav>
         <ul>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('applicant_dashboard') }}">Home</a></li>
             <li><a href="#applied_jobs">Applied Jobs</a></li>
             <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
         </ul>
@@ -17,75 +17,255 @@
 </header>
 
 <main>
-    <section id="job-listings">
-        <h2>Recent Job Postings</h2>
-        
-        {% for job in job_postings %}
-        <div class="job-card">
-            <div class="job-summary">
-                <h3>{{ job.job_title }}</h3>
-                <p><strong>Salary:</strong> {{ job.salary if job.salary else 'Not specified' }}</p>
-                <button class="toggle-details-btn" onclick="toggleDetails(this)">View Details</button>
+    
+
+    <section id="job-listings" class="job-listings-container">
+        <div class="job-filters">
+            <div class="filter-group">
+                <label for="job-type-filter">Job Type:</label>
+                <select id="job-type-filter" class="filter-select">
+                    <option value="all">All Types</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                </select>
             </div>
-            <div class="job-details" style="display: none;">
-                <p><strong>Company:</strong> {{ job.company }}</p>
-                <p><strong>Location:</strong> {{ job.location }}</p>
-                <p><strong>Job Type:</strong> {{ job.job_type }}</p>
-                <p><strong>Description:</strong> {{ job.description }}</p>
-                <p><strong>Required Skills:</strong> {{ ', '.join(job.required_skills) if job.required_skills else 'None' }}</p>
-                <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
-                    <button type="submit" class="apply-btn">Apply Now</button>
-                </form>
+            
+            <div class="filter-group">
+                <label for="sort-by">Sort By:</label>
+                <select id="sort-by" class="filter-select">
+                    <option value="match" {% if sort_by == 'match' %}selected{% endif %}>Best Match</option>
+                    <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Newest</option>
+                    <option value="salary" {% if sort_by == 'salary' %}selected{% endif %}>Salary</option>
+                </select>
             </div>
+            
+            <button id="reset-filters" class="btn btn-outline-secondary">Reset</button>
         </div>
-        {% else %}
-        <p>No recent job postings available.</p>
-        {% endfor %}
+    
+        <div class="job-grid">
+            {% for job in job_postings %}
+            <div class="job-card" data-job-id="{{ job.id }}">
+                <div class="job-card-header">
+                    <h3>{{ job.job_title }}</h3>
+                    <div class="company-location">
+                        <span class="company">{{ job.company }}</span>
+                        <span class="location">{{ job.location }}</span>
+                    </div>
+                </div>
+                
+                <div class="job-card-body">
+                    <div class="job-meta">
+                        <span class="salary">{{ job.salary if job.salary else 'Negotiable' }}</span>
+                        <span class="job-type">{{ job.job_type }}</span>
+                        <span class="date">{{ (now - job.posted_date).days }}d ago</span>
+                    </div>
+                    
+                    <div class="match-info">
+                        <div class="match-score">
+                            <div class="score">{{ job.match_score }}%</div>
+                            <div class="match-bar">
+                                <div class="fill" style="width: {{ job.match_score }}%"></div>
+                            </div>
+                        </div>
+                        <div class="skills-matched">
+                            {{ job.matched_skills_count }}/{{ job.total_required_skills }} skills match
+                        </div>
+                    </div>
+                    
+                    <div class="preview-skills">
+                        {% for skill in job.matched_skills[:3] %}
+                        <span class="skill matched">{{ skill }}</span>
+                        {% endfor %}
+                        {% if (job.total_required_skills - job.matched_skills_count) > 0 %}
+                        <span class="skill missing">+{{ job.total_required_skills - job.matched_skills_count }} more</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="job-card-footer">
+                    {% if job.id in applied_job_ids %}
+                    <button class="btn btn-applied" disabled>
+                        {% if job.application_status == 'accepted' %}
+                        <i class="fas fa-check-circle"></i> Accepted
+                        {% elif job.application_status == 'rejected' %}
+                        <i class="fas fa-times-circle"></i> Not Selected
+                        {% else %}
+                        <i class="fas fa-check"></i> Applied
+                        {% endif %}
+                    </button>
+                    {% else %}
+                    <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
+                        <button type="submit" class="btn btn-apply">Quick Apply</button>
+                    </form>
+                    {% endif %}
+                    <button class="btn btn-details" onclick="toggleDetails(this)">
+                        View Details <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                
+                <div class="job-details">
+                    <div class="details-section">
+                        <h4>Description</h4>
+                        <p>{{ job.description }}</p>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4>Required Skills</h4>
+                        <div class="skills-list">
+                            {% for skill in job.required_skills %}
+                            <span class="skill {% if skill in job.matched_skills %}matched{% else %}missing{% endif %}">
+                                {{ skill }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="details-actions">
+                        {% if job.id not in applied_job_ids %}
+                        <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
+                            <button type="submit" class="btn btn-primary">Apply Now</button>
+                        </form>
+                        {% endif %}
+                        <button class="btn btn-outline-secondary" onclick="toggleDetails(this.closest('.job-card').querySelector('.btn-details'))">
+                            Close Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="no-jobs">
+                <i class="fas fa-briefcase"></i>
+                <h3>No jobs found</h3>
+                <p>Try adjusting your filters</p>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <div class="pagination">
+            <button class="btn-prev" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="page-info">Page <span id="current-page">1</span></div>
+            <button class="btn-next" onclick="changePage(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
     </section>
 
     <script>
+        let currentPage = 1;
+        const jobsPerPage = 6;
+        let filteredJobs = Array.from(document.querySelectorAll('.job-card'));
+        
         function toggleDetails(button) {
-            const details = button.parentElement.nextElementSibling;
-            if (details.style.display === "none") {
-                details.style.display = "block";
-                button.textContent = "Hide Details";
+            const card = button.closest('.job-card');
+            const details = card.querySelector('.job-details');
+            const icon = button.querySelector('i');
+            
+            details.classList.toggle('active');
+            
+            if (details.classList.contains('active')) {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                button.innerHTML = 'Hide Details <i class="fas fa-chevron-up"></i>';
             } else {
-                details.style.display = "none";
-                button.textContent = "View Details";
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                button.innerHTML = 'View Details <i class="fas fa-chevron-down"></i>';
             }
         }
-    </script>
-
-    <section id="applied_jobs">
-        <h2>Jobs You Have Applied For</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Job Title</th>
-                    <th>Company</th>
-                    <th>Location</th>
-                    <th>Job Type</th>
-                    <th>Applied On</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for applied_job in applied_jobs %}
-                <tr>
-                    <td>{{ applied_job.job.job_title }}</td>
-                    <td>{{ applied_job.job.company }}</td>
-                    <td>{{ applied_job.job.location }}</td>
-                    <td>{{ applied_job.job.job_type }}</td>
-                    <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
-                    <td>{{ applied_job.status }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5">You have not applied to any jobs yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+        
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage < 1) return;
+            
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (newPage > totalPages) return;
+            
+            currentPage = newPage;
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const start = (currentPage - 1) * jobsPerPage;
+            const end = start + jobsPerPage;
+            
+            // Hide all jobs
+            document.querySelectorAll('.job-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show current page jobs
+            filteredJobs.slice(start, end).forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // Update page info
+            document.getElementById('current-page').textContent = currentPage;
+            
+            // Update button states
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            document.querySelector('.btn-prev').disabled = currentPage === 1;
+            document.querySelector('.btn-next').disabled = currentPage === totalPages;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            filteredJobs = Array.from(document.querySelectorAll('.job-card'));
+            updatePagination();
+            
+            // Filter functionality
+            document.getElementById('job-type-filter').addEventListener('change', function() {
+                const type = this.value;
+                filteredJobs = Array.from(document.querySelectorAll('.job-card')).filter(card => {
+                    return type === 'all' || card.dataset.jobType === type;
+                });
+                currentPage = 1;
+                updatePagination();
+            });
+            
+            // Sort functionality
+            document.getElementById('sort-by').addEventListener('change', function() {
+                const sortBy = this.value;
+                filteredJobs.sort((a, b) => {
+                    if (sortBy === 'date') {
+                        return b.dataset.postedDate - a.dataset.postedDate;
+                    } else if (sortBy === 'salary') {
+                        return b.dataset.salary - a.dataset.salary;
+                    } else {
+                        return b.dataset.matchScore - a.dataset.matchScore;
+                    }
+                });
+                currentPage = 1;
+                updatePagination();
+            });
+        });
+        </script>
+<section id="applied_jobs">
+    <h2>Jobs You Have Applied For</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Job Type</th>
+                <th>Applied On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for applied_job in applied_jobs %}
+            <tr>
+                <td>{{ applied_job.job.job_title }}</td>
+                <td>{{ applied_job.job.company }}</td>
+                <td>{{ applied_job.job.location }}</td>
+                <td>{{ applied_job.job.job_type }}</td>
+                <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ applied_job.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">You have not applied to any jobs yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
 </main>
 {% endblock %}
