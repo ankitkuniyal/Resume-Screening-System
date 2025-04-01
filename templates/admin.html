@@ -125,7 +125,6 @@
                         <th>Field</th>
                         <th>Experience</th>
                         <th>Skills</th>
-                        <th>Resume</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,13 +154,6 @@
                                     {% endfor %}
                                 {% endif %}
                             {% endfor %}
-                        </td>
-                        <td>
-                            {% if applicant['resume_link'] %}
-                                <a href="{{ applicant['resume_link'] }}" target="_blank" class="btn btn-link">View Resume</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
