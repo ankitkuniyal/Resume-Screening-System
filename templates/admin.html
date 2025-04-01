@@ -125,7 +125,6 @@
                         <th>Field</th>
                         <th>Experience</th>
                         <th>Skills</th>
-                        <th>Resume</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,13 +154,6 @@
                                     {% endfor %}
                                 {% endif %}
                             {% endfor %}
-                        </td>
-                        <td>
-                            {% if applicant['resume_link'] %}
-                                <a href="{{ applicant['resume_link'] }}" target="_blank" class="btn btn-link">View Resume</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -342,7 +334,6 @@
                     <th>ID</th>
                     <th>Applicant</th>
                     <th>Skill</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -366,11 +357,6 @@
                                 {{ skill['skill_name'] }}
                             {% endif %}
                         {% endfor %}
-                    </td>
-                    <td class="actions">
-                        <button class="btn btn-delete" onclick="confirmDeleteApplicantSkill({{ as_['id'] }})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
                     </td>
                 </tr>
                 {% endfor %}
