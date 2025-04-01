@@ -458,7 +458,7 @@ def view_applicants(job_id):
             'score': round(score, 2),
             'total_required_skills': len(required_skills_lower),
             'matched_skills_count': len(exact_matches),
-            'resume_url': applicant.resume  # Corrected to use the existing attribute
+            'resume_link': applicant.resume_link  # Use the resume_link column to display the resume link
         })
     
     # Sort by best matches first (highest score) by default

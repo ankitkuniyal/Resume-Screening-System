@@ -6,7 +6,10 @@
 />
 {% endblock %} {% block content %}
 <div class="container mt-4">
-  <h2>Applicants for {{ job.job_title }} at {{ job.company }}</h2>
+  <h2 style="display:flex; justify-content: space-between; font-size: 15px; height: 40px; align-items: center;" >Applicants for {{ job.job_title }} at {{ job.company }}  <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary"
+    >Back to Dashboard</a
+  ></h2>
+  
   <p><strong>Required Skills:</strong> {{ job.required_skills|join(', ') }}</p>
 
   <div class="mb-3">
@@ -147,9 +150,12 @@
           </td>
           <td>
             <div class="btn-group">
-              <td>
+                
                 {% if applicant['resume_link'] %}
-                    <a href="{{ applicant['resume_link'] }}" target="_blank" class="btn btn-link">View Resume</a>
+                  <a href="{{ applicant['resume_link'] }}" target="_blank" class="btn btn-sm btn-info" style="text-decoration: none;">ViewResume</a>
+                {% else %}
+                  <span class="btn btn-sm btn-info" >No Resume uploaded</span>
+                {% endif %}
               <form
                 method="POST"
                 action="{{ url_for('update_application_status', application_id=applicant.application_id) }}"
@@ -181,8 +187,8 @@
       </tbody>
     </table>
   </div>
-  <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary"
+  <!-- <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary"
     >Back to Dashboard</a
-  >
+  > -->
 </div>
 {% endblock %}
