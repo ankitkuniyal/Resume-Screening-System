@@ -147,11 +147,9 @@
           </td>
           <td>
             <div class="btn-group">
-              <a
-                href="{{ url_for('view_resume', applicant_id=applicant.applicant_id) }}"
-                class="btn btn-sm btn-info"
-                >View Resume</a
-              >
+              <td>
+                {% if applicant['resume_link'] %}
+                    <a href="{{ applicant['resume_link'] }}" target="_blank" class="btn btn-link">View Resume</a>
               <form
                 method="POST"
                 action="{{ url_for('update_application_status', application_id=applicant.application_id) }}"

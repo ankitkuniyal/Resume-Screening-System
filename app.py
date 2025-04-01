@@ -12,8 +12,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///resume_screening.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads/company_logos'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 
 # Initialize database
 db = SQLAlchemy(app)
@@ -63,7 +61,7 @@ class Applicant(db.Model):
     highest_qualification = db.Column(db.String(50), nullable=False)
     field_of_study = db.Column(db.String(100), nullable=False)
     experience_years = db.Column(db.Integer, nullable=True, default=0)
-    resume = db.Column(db.String(255), nullable=True)
+    resume_link = db.Column(db.String(255), nullable=True)
 
     skills = db.relationship('ApplicantSkill', backref='applicant', lazy=True)
 
@@ -84,20 +82,13 @@ class ApplicantSkill(db.Model):
     skill_id = db.Column(db.Integer, db.ForeignKey('skill.id'), nullable=False)
     skill = db.relationship('Skill')  # Add relationship for easier access
 
-# Create directories
-def create_dirs():
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
-    if not os.path.exists('static/resumes'):
-        os.makedirs('static/resumes')
-
 # Initialize data
 def initialize_data():
     # Create default admin
-    if not User.query.filter_by(email='admin@resumescreening.com').first():
+    if not User.query.filter_by(email='admin@example.com').first():
         admin_user = User(
             username='Admin',
-            email='admin@resumescreening.com',
+            email='admin@example.com',
             password=generate_password_hash('admin123'),
             role='admin'
         )
@@ -118,7 +109,6 @@ def initialize_data():
 # Initialize database
 with app.app_context():
     db.create_all()
-    create_dirs()
     initialize_data()
 
 # Home route
@@ -171,8 +161,9 @@ def register_applicant():
         highest_qualification = request.form['highest_qualification']
         field_of_study = request.form['field_of_study']
         experience_years = request.form.get('experience_years', 0)
+        resume_link = request.form['resume_link']  # New field for resume link
         selected_skill_ids = request.form.getlist('skills')
-
+    
         # Validation
         if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
             flash('Invalid email!', 'danger')
@@ -185,7 +176,10 @@ def register_applicant():
         if len(password) < 8:
             flash('Password too short!', 'danger')
             return redirect(url_for('register_applicant'))
-
+        
+        if not re.match(r"https://drive\.google\.com/.*", resume_link):
+             flash('Please enter a valid Google Drive link.', 'danger')
+             return redirect(url_for('register_applicant'))
         # Create user
         hashed_password = generate_password_hash(password)
         new_user = User(
@@ -206,7 +200,8 @@ def register_applicant():
             address=address,
             highest_qualification=highest_qualification,
             field_of_study=field_of_study,
-            experience_years=experience_years
+            experience_years=experience_years,
+            resume_link=resume_link  # Store resume link
         )
         db.session.add(new_applicant)
         db.session.commit()
@@ -357,6 +352,7 @@ def apply_for_job(job_id):
 
     flash('Application submitted!', 'success')
     return redirect(url_for('applicant_dashboard'))
+
 @app.route('/employer/post-job', methods=['GET', 'POST'])
 def post_job():
     # Authentication check
@@ -410,7 +406,6 @@ def post_job():
     # GET request - show form
     skills = Skill.query.all()
     return render_template('post_job.html', all_skills=skills)
-
 
 @app.route('/employer/applicants/<int:job_id>')
 def view_applicants(job_id):
@@ -671,6 +666,7 @@ def delete_job(job_id):
         flash(f'Error deleting job: {str(e)}', 'danger')
         app.logger.error(f"Error deleting job {job_id}: {str(e)}")
         return redirect(url_for('employer_dashboard'))
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
