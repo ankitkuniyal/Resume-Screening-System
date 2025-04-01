@@ -37,7 +37,6 @@ class Employer(db.Model):
     website = db.Column(db.String(255), nullable=True)
     address = db.Column(db.String(255), nullable=False)
     contact = db.Column(db.String(15), nullable=False)
-    linkedin = db.Column(db.String(255), nullable=True)
     company_logo = db.Column(db.String(255), nullable=True)
 
     jobs = db.relationship('Job', backref='employer', lazy=True)
@@ -687,4 +686,4 @@ def delete_job(job_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=3200)
+    app.run(debug=True, port=3000)

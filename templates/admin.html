@@ -85,7 +85,6 @@
                         <th>Website</th>
                         <th>Address</th>
                         <th>Contact</th>
-                        <th>LinkedIn</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,7 +102,6 @@
                         <td>{{ employer['website'] if employer['website'] else 'N/A' }}</td>
                         <td>{{ employer['address'] }}</td>
                         <td>{{ employer['contact'] }}</td>
-                        <td>{{ employer['linkedin'] if employer['linkedin'] else 'N/A' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
