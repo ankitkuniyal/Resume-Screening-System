@@ -6,10 +6,11 @@
 {% endblock %}
 {% block content %}
 <header>
-    <h1>Welcome, {{ applicant_name }}!</h1>
+    <h1>Welcome, {{ applicant_name }}</h1>
     <nav>
         <ul>
             <li><a href="{{ url_for('applicant_dashboard') }}">Home</a></li>
+            <li><a href="{{ url_for('applicant_profile') }}">Profile</a></li>
             <li><a href="#applied_jobs">Applied Jobs</a></li>
             <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
         </ul>

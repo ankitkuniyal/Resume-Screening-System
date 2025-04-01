@@ -386,7 +386,6 @@ def admin_dashboard():
                          applicant_skills=applicant_skills)
 
 # Job routes
-
 @app.route('/apply/<int:job_id>', methods=['POST'])
 def apply_for_job(job_id):
     if 'user_id' not in session or session['role'] != 'applicant':
@@ -552,7 +551,12 @@ def update_application_status(application_id):
     application.status = new_status
     db.session.commit()
     
-    flash(f'Application status updated to {new_status}', 'success')
+    if new_status == 'accepted':
+        # Add logic to send email or notification here if needed
+        flash('Application status updated to accepted. Email sent to the applicant for further process.', 'success')
+    else:
+        flash(f'Application status updated to {new_status}', 'success')
+    
     return redirect(request.referrer or url_for('employer_dashboard'))
 
 # Skill management routes
@@ -705,6 +709,72 @@ def delete_job(job_id):
         flash(f'Error deleting job: {str(e)}', 'danger')
         app.logger.error(f"Error deleting job {job_id}: {str(e)}")
         return redirect(url_for('employer_dashboard'))
+
+#Profile Route
+@app.route('/applicant/profile', methods=['GET', 'POST'])
+def applicant_profile():
+    if 'user_id' not in session or session['role'] != 'applicant':
+        flash('Please login as applicant to view this page', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+    applicant = Applicant.query.filter_by(user_id=user.id).first()
+    
+    if not applicant:
+        flash('Applicant profile not found', 'danger')
+        return redirect(url_for('applicant_dashboard'))
+
+    # Get all available skills for the form
+    all_skills = Skill.query.all()
+    
+    if request.method == 'POST':
+        # Update user data
+        user.username = request.form.get('name', user.username)
+        user.email = request.form.get('email', user.email)
+        user.phone = request.form.get('phone', user.phone)
+        
+        # Update applicant data
+        try:
+            applicant.dob = datetime.strptime(request.form['dob'], '%Y-%m-%d').date()
+        except:
+            flash('Invalid date format', 'danger')
+            return redirect(url_for('applicant_profile'))
+            
+        applicant.gender = request.form.get('gender', applicant.gender)
+        applicant.address = request.form.get('address', applicant.address)
+        applicant.highest_qualification = request.form.get('highest_qualification', applicant.highest_qualification)
+        applicant.field_of_study = request.form.get('field_of_study', applicant.field_of_study)
+        applicant.experience_years = int(request.form.get('experience_years', applicant.experience_years))
+        applicant.resume_link = request.form.get('resume_link', applicant.resume_link)
+        
+        # Update skills
+        selected_skill_ids = request.form.getlist('skills')
+        
+        # Remove unselected skills
+        for applicant_skill in applicant.skills:
+            if str(applicant_skill.skill_id) not in selected_skill_ids:
+                db.session.delete(applicant_skill)
+        
+        # Add new skills
+        existing_skill_ids = {skill.skill_id for skill in applicant.skills}
+        for skill_id in selected_skill_ids:
+            if int(skill_id) not in existing_skill_ids:
+                new_skill = ApplicantSkill(applicant_id=applicant.id, skill_id=int(skill_id))
+                db.session.add(new_skill)
+        
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('applicant_profile'))
+    
+    # Get current skills for the applicant
+    current_skill_ids = [skill.skill_id for skill in applicant.skills]
+    
+    return render_template('applicant_profile.html',
+                         user=user,
+                         applicant=applicant,
+                         all_skills=all_skills,
+                         current_skill_ids=current_skill_ids,
+                         datetime=datetime)
 
 if __name__ == '__main__':
     with app.app_context():
