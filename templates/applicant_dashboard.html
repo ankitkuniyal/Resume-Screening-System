@@ -3,177 +3,7 @@
 {% block title %}{{ applicant_name }}'s Dashboard{% endblock %}
 {% block styles %}
 <link rel="stylesheet" href="../static/css/applicant_dashboard.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<style>
-    /* Search and Filter Layout */
-    .job-filters {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        gap: 30px;
-        margin-bottom: 25px;
-    }
-    
-    .search-container {
-        flex: 2;
-        min-width: 300px;
-        max-width: 500px;
-        position: relative;
-    }
-    
-    .search-input {
-        width: 100%;
-        padding: 10px 15px 10px 40px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 16px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        height: 40px;
-        box-sizing: border-box;
-    }
-    
-    .search-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #999;
-        font-size: 14px;
-    }
-
-    /* Job Details Modal Styles */
-    .job-details-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.8);
-        z-index: 1000;
-        overflow-y: auto;
-        padding: 40px 20px;
-    }
-    
-    .job-details-content {
-        background-color: white;
-        max-width: 900px;
-        margin: 0 auto;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        padding: 30px;
-        position: relative;
-    }
-    
-    .close-modal {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #666;
-        background: none;
-        border: none;
-        padding: 5px;
-    }
-    
-    .close-modal:hover {
-        color: #333;
-    }
-    
-    .modal-header {
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .modal-header h2 {
-        margin-bottom: 5px;
-    }
-    
-    .modal-header .company-location {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .modal-header .job-meta {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-    
-    .modal-body {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-    }
-    
-    .modal-section {
-        margin-bottom: 20px;
-    }
-    
-    .modal-section h4 {
-        margin-bottom: 10px;
-        color: #2c3e50;
-    }
-    
-    .skills-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .skill {
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    
-    .skill.matched {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-    
-    .skill.missing {
-        background-color: #ffebee;
-        color: #c62828;
-    }
-    
-    .modal-actions {
-        display: flex;
-        gap: 15px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-    }
-    
-    @media (max-width: 768px) {
-        .modal-body {
-            grid-template-columns: 1fr;
-        }
-        
-        .job-details-content {
-            padding: 20px;
-        }
-    }
-
-    /* Already Applied Button Styles */
-    .btn-applied {
-        background-color: #28a745;
-        color: white;
-        cursor: not-allowed;
-    }
-    
-    .btn-applied:hover {
-        background-color: #28a745;
-        transform: none;
-    }
-</style>
 {% endblock %}
-
 {% block content %}
 <header>
     <h1>Welcome, {{ applicant_name }}</h1>
@@ -188,50 +18,35 @@
 </header>
 
 <main>
+    
+
     <section id="job-listings" class="job-listings-container">
         <div class="job-filters">
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="job-search" class="search-input" placeholder="Search jobs by title, company, or location...">
+            <div class="filter-group">
+                <label for="job-type-filter">Job Type:</label>
+                <select id="job-type-filter" class="filter-select">
+                    <option value="all">All Types</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                </select>
             </div>
             
-            <div class="filter-controls">
-                <div class="filter-group">
-                    <label for="job-type-filter">Job Type:</label>
-                    <select id="job-type-filter" class="filter-select">
-                        <option value="all">All Types</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Contract">Contract</option>
-                        <option value="Internship">Internship</option>
-                        <option value="Remote">Remote</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="sort-by">Sort By:</label>
-                    <select id="sort-by" class="filter-select">
-                        <option value="match">Best Match</option>
-                        <option value="date">Newest</option>
-                        <option value="salary">Salary</option>
-                    </select>
-                </div>
-                
-                <button id="reset-filters" class="btn btn-outline-secondary">Reset</button>
+            <div class="filter-group">
+                <label for="sort-by">Sort By:</label>
+                <select id="sort-by" class="filter-select">
+                    <option value="match" {% if sort_by == 'match' %}selected{% endif %}>Best Match</option>
+                    <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Newest</option>
+                    <option value="salary" {% if sort_by == 'salary' %}selected{% endif %}>Salary</option>
+                </select>
             </div>
+            
+            <button id="reset-filters" class="btn btn-outline-secondary">Reset</button>
         </div>
     
         <div class="job-grid">
             {% for job in job_postings %}
-            <div class="job-card" data-job-id="{{ job.id }}" data-job-type="{{ job.job_type }}" 
-                 data-match-score="{{ job.match_score }}" data-posted-date="{{ job.posted_date.timestamp() }}" 
-                 data-salary="{{ job.salary if job.salary else 0 }}"
-                 data-job-title="{{ job.job_title.lower() }}"
-                 data-company="{{ job.company.lower() }}"
-                 data-location="{{ job.location.lower() }}"
-                 data-description="{{ job.description.lower() }}"
-                 data-matched-skills="{{ job.matched_skills|join(',') }}"
-                 data-required-skills="{{ job.required_skills|join(',') }}">
+            <div class="job-card" data-job-id="{{ job.id }}">
                 <div class="job-card-header">
                     <h3>{{ job.job_title }}</h3>
                     <div class="company-location">
@@ -271,14 +86,52 @@
                 
                 <div class="job-card-footer">
                     {% if job.id in applied_job_ids %}
+                    <button class="btn btn-applied" disabled>
+                        {% if job.application_status == 'accepted' %}
+                        <i class="fas fa-check-circle"></i> Accepted
+                        {% elif job.application_status == 'rejected' %}
+                        <i class="fas fa-times-circle"></i> Not Selected
+                        {% else %}
+                        <i class="fas fa-check"></i> Applied
+                        {% endif %}
+                    </button>
                     {% else %}
-                    <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST" class="job-application-form">
+                    <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
                         <button type="submit" class="btn btn-apply">Quick Apply</button>
                     </form>
                     {% endif %}
-                    <button class="btn btn-details" data-job-id="{{ job.id }}">
-                        View Details <i class="fas fa-chevron-right"></i>
+                    <button class="btn btn-details" onclick="toggleDetails(this)">
+                        View Details <i class="fas fa-chevron-down"></i>
                     </button>
+                </div>
+                
+                <div class="job-details">
+                    <div class="details-section">
+                        <h4>Description</h4>
+                        <p>{{ job.description }}</p>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4>Required Skills</h4>
+                        <div class="skills-list">
+                            {% for skill in job.required_skills %}
+                            <span class="skill {% if skill in job.matched_skills %}matched{% else %}missing{% endif %}">
+                                {{ skill }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="details-actions">
+                        {% if job.id not in applied_job_ids %}
+                        <form action="{{ url_for('apply_for_job', job_id=job.id) }}" method="POST">
+                            <button type="submit" class="btn btn-primary">Apply Now</button>
+                        </form>
+                        {% endif %}
+                        <button class="btn btn-outline-secondary" onclick="toggleDetails(this.closest('.job-card').querySelector('.btn-details'))">
+                            Close Details
+                        </button>
+                    </div>
                 </div>
             </div>
             {% else %}
@@ -291,246 +144,44 @@
         </div>
     
         <div class="pagination">
-            <button class="btn-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn-prev" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i></button>
             <div class="page-info">Page <span id="current-page">1</span></div>
-            <button class="btn-next"><i class="fas fa-chevron-right"></i></button>
+            <button class="btn-next" onclick="changePage(1)"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
     <script>
         let currentPage = 1;
         const jobsPerPage = 6;
-        let filteredJobs = Array.from(document.querySelectorAll('.job-card'));
-        
-        function toggleDetails(button) {
-            const card = button.closest('.job-card');
-            const details = card.querySelector('.job-details');
-            const icon = button.querySelector('i');
-            
-            details.classList.toggle('active');
-            
-            if (details.classList.contains('active')) {
-                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-                button.innerHTML = 'Hide Details <i class="fas fa-chevron-up"></i>';
-            } else {
-                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-                button.innerHTML = 'View Details <i class="fas fa-chevron-down"></i>';
-            }
-        }
-        
-        function changePage(delta) {
-            const newPage = currentPage + delta;
-            if (newPage < 1) return;
-            
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-            if (newPage > totalPages) return;
-            
-            currentPage = newPage;
-            updatePagination();
-        }
-        
-        function updatePagination() {
-            const start = (currentPage - 1) * jobsPerPage;
-            const end = start + jobsPerPage;
-            
-            // Hide all jobs
-            document.querySelectorAll('.job-card').forEach(card => {
-                card.style.display = 'none';
-            });
-            
-            // Show current page jobs
-            filteredJobs.slice(start, end).forEach(card => {
-                card.style.display = 'block';
-            });
-            
-            // Update page info
-            document.getElementById('current-page').textContent = currentPage;
-            
-            // Update button states
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-            document.querySelector('.btn-prev').disabled = currentPage === 1;
-            document.querySelector('.btn-next').disabled = currentPage === totalPages;
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            filteredJobs = Array.from(document.querySelectorAll('.job-card'));
-            updatePagination();
-            
-            // Filter functionality
-            document.getElementById('job-type-filter').addEventListener('change', function() {
-                const type = this.value;
-                filteredJobs = Array.from(document.querySelectorAll('.job-card')).filter(card => {
-                    return type === 'all' || card.dataset.jobType === type;
-                });
-                currentPage = 1;
-                updatePagination();
-            });
-            
-            // Sort functionality
-            document.getElementById('sort-by').addEventListener('change', function() {
-                const sortBy = this.value;
-                filteredJobs.sort((a, b) => {
-                    if (sortBy === 'date') {
-                        return b.dataset.postedDate - a.dataset.postedDate;
-                    } else if (sortBy === 'salary') {
-                        return b.dataset.salary - a.dataset.salary;
-                    } else {
-                        return b.dataset.matchScore - a.dataset.matchScore;
-                    }
-                });
-                currentPage = 1;
-                updatePagination();
-            });
-        });
-        </script>
-<section id="applied_jobs">
-    <h2>Jobs You Have Applied For</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Job Title</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Job Type</th>
-                <th>Applied On</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for applied_job in applied_jobs %}
-            <tr>
-                <td>{{ applied_job.job.job_title }}</td>
-                <td>{{ applied_job.job.company }}</td>
-                <td>{{ applied_job.job.location }}</td>
-                <td>{{ applied_job.job.job_type }}</td>
-                <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
-                <td>{{ applied_job.status }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5">You have not applied to any jobs yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
-</main>
-
-<!-- Job Details Modal -->
-<div id="job-details-modal" class="job-details-modal">
-    <div class="job-details-content">
-        <button class="close-modal">&times;</button>
-        <div class="modal-header">
-            <h2 id="modal-job-title"></h2>
-            <div class="company-location">
-                <span class="company" id="modal-company"></span>
-                <span class="location" id="modal-location"></span>
-            </div>
-            <div class="job-meta">
-                <span class="salary" id="modal-salary"></span>
-                <span class="job-type" id="modal-job-type"></span>
-                <span class="date" id="modal-date"></span>
-            </div>
-            <div class="match-info">
-                <div class="match-score">
-                    <div class="score" id="modal-match-score"></div>
-                    <div class="match-bar">
-                        <div class="fill" id="modal-match-bar"></div>
-                    </div>
-                </div>
-                <div class="skills-matched" id="modal-skills-matched"></div>
-            </div>
-        </div>
-        
-        <div class="modal-body">
-            <div class="modal-section">
-                <h4>Description</h4>
-                <p id="modal-description"></p>
-            </div>
-            
-            <div class="modal-section">
-                <h4>Required Skills</h4>
-                <div class="skills-list" id="modal-skills-list"></div>
-            </div>
-        </div>
-        
-        <div class="modal-actions">
-            <form id="modal-application-form" method="POST" class="job-application-form">
-                <button type="submit" class="btn btn-primary" id="modal-apply-btn">Apply Now</button>
-            </form>
-            <button class="btn btn-outline-secondary close-modal">Close</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Initialize variables
-        let currentPage = 1;
-        const jobsPerPage = 6;
         let allJobs = Array.from(document.querySelectorAll('.job-card'));
         let filteredJobs = [...allJobs];
-        const modal = document.getElementById('job-details-modal');
-        const closeModalBtn = document.querySelector('.close-modal');
         
-        // 2. Search functionality
-        const jobSearch = document.getElementById('job-search');
-        jobSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            
-            filteredJobs = allJobs.filter(card => {
-                if (searchTerm === '') return true;
+        // Add data attributes to job cards when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all job cards with proper data attributes
+            document.querySelectorAll('.job-card').forEach(card => {
+                const jobType = card.querySelector('.job-type').textContent.trim();
+                const salaryText = card.querySelector('.salary').textContent;
+                const matchScore = parseInt(card.querySelector('.score').textContent);
+                const dateText = card.querySelector('.date').textContent;
                 
-                const jobTitle = card.dataset.jobTitle;
-                const company = card.dataset.company;
-                const location = card.dataset.location;
-                const description = card.dataset.description;
+                // Set data attributes
+                card.dataset.jobType = jobType;
+                card.dataset.matchScore = matchScore;
+                card.dataset.postedDate = parseInt(dateText.replace('d ago', ''));
                 
-                return jobTitle.includes(searchTerm) || 
-                       company.includes(searchTerm) || 
-                       location.includes(searchTerm) || 
-                       description.includes(searchTerm);
+                // Parse salary (handle different formats)
+                let salaryValue = 0;
+                if (salaryText.includes('$')) {
+                    const salaryNum = salaryText.replace(/[^0-9]/g, '');
+                    salaryValue = salaryNum ? parseInt(salaryNum) : 0;
+                }
+                card.dataset.salary = salaryValue;
             });
             
-            currentPage = 1;
             updatePagination();
-        });
-
-        // 3. Prepare job data with proper numeric values
-        allJobs.forEach(card => {
-            // Extract elements
-            const scoreEl = card.querySelector('.score');
-            const dateEl = card.querySelector('.date');
-            const salaryEl = card.querySelector('.salary');
-            const jobTypeEl = card.querySelector('.job-type');
-    
-            // Convert match score (remove %)
-            const matchScore = parseInt(scoreEl.textContent.replace('%', '')) || 0;
             
-            // Convert date (handle "Xd ago" format)
-            const daysAgo = parseInt(dateEl.textContent) || 0;
-            const postedDate = new Date();
-            postedDate.setDate(postedDate.getDate() - daysAgo);
-            
-            // Convert salary (handle "Negotiable" and parse numbers)
-            let salary = 0;
-            const salaryText = salaryEl.textContent;
-            if (salaryText !== 'Negotiable') {
-                salary = parseInt(salaryText.replace(/[^0-9]/g, '')) || 0;
-            }
-    
-            // Store as data attributes
-            card.dataset.jobType = jobTypeEl.textContent;
-            card.dataset.matchScore = matchScore;
-            card.dataset.postedDate = postedDate.getTime(); // timestamp
-            card.dataset.salary = salary;
-    
-            // Add titles for debugging
-            card.title = `Match: ${matchScore}% | Posted: ${postedDate.toDateString()} | Salary: ${salaryText}`;
-        });
-    
-        // 4. Perfect Sorting Function (FIXED DIRECTION)
+            // 4. Perfect Sorting Function (FIXED DIRECTION)
         function sortJobs(sortBy) {
             filteredJobs.sort((a, b) => {
                 // Get numeric values for comparison
@@ -626,166 +277,104 @@
                 block: 'start'
             });
         }
-    
-        // 8. Job Application Handling
-        function handleJobApplication(form, button) {
-            const jobCard = form.closest('.job-card');
-            const jobId = jobCard.dataset.jobId;
-            
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the main card footer
-                    const footer = jobCard.querySelector('.job-card-footer');
-                    footer.innerHTML = `
-                        <button class="btn btn-applied" disabled>
-                            <i class="fas fa-check-circle"></i> Already Applied
-                        </button>
-                        <button class="btn btn-details" data-job-id="${jobId}">
-                            View Details <i class="fas fa-chevron-right"></i>
-                        </button>
-                    `;
-                    
-                    // Update the modal if open for this job
-                    if (modal.style.display === 'block' && document.getElementById('modal-application-form').action.includes(jobId)) {
-                        document.getElementById('modal-application-form').innerHTML = `
-                            <button class="btn btn-applied" disabled>
-                                <i class="fas fa-check-circle"></i> Already Applied
-                            </button>
-                        `;
-                    }
-                    
-                    // Reattach event listeners
-                    footer.querySelector('.btn-details').addEventListener('click', showJobDetails);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+            // Reset Filters
+            document.getElementById('reset-filters').addEventListener('click', function() {
+                document.getElementById('job-type-filter').value = 'all';
+                document.getElementById('sort-by').value = 'match';
+                filteredJobs = [...allJobs];
+                currentPage = 1;
+                updatePagination();
             });
+        });
+        
+        function updatePagination() {
+            const start = (currentPage - 1) * jobsPerPage;
+            const end = start + jobsPerPage;
+            
+            // Hide all jobs
+            document.querySelectorAll('.job-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show current page jobs
+            filteredJobs.slice(start, end).forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // Update page info
+            document.getElementById('current-page').textContent = currentPage;
+            
+            // Update button states
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            document.querySelector('.btn-prev').disabled = currentPage === 1;
+            document.querySelector('.btn-next').disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Show no jobs message if empty
+            const noJobsElement = document.querySelector('.no-jobs');
+            if (noJobsElement) {
+                noJobsElement.style.display = filteredJobs.length === 0 ? 'block' : 'none';
+            }
         }
         
-        // 9. Show job details in modal
-        function showJobDetails() {
-            const jobCard = this.closest('.job-card');
-            const jobId = jobCard.dataset.jobId;
+        function toggleDetails(button) {
+            const card = button.closest('.job-card');
+            const details = card.querySelector('.job-details');
+            const icon = button.querySelector('i');
             
-            // Populate modal with job data
-            document.getElementById('modal-job-title').textContent = jobCard.querySelector('h3').textContent;
-            document.getElementById('modal-company').textContent = jobCard.querySelector('.company').textContent;
-            document.getElementById('modal-location').textContent = jobCard.querySelector('.location').textContent;
-            document.getElementById('modal-salary').textContent = jobCard.querySelector('.salary').textContent;
-            document.getElementById('modal-job-type').textContent = jobCard.querySelector('.job-type').textContent;
-            document.getElementById('modal-date').textContent = jobCard.querySelector('.date').textContent;
-            document.getElementById('modal-match-score').textContent = jobCard.querySelector('.score').textContent;
-            document.getElementById('modal-match-bar').style.width = jobCard.querySelector('.fill').style.width;
-            document.getElementById('modal-skills-matched').textContent = jobCard.querySelector('.skills-matched').textContent;
-            document.getElementById('modal-description').textContent = jobCard.dataset.description;
+            details.classList.toggle('active');
             
-            // Populate skills list
-            const skillsList = document.getElementById('modal-skills-list');
-            skillsList.innerHTML = '';
-            
-            const matchedSkills = jobCard.dataset.matchedSkills.split(',');
-            const requiredSkills = jobCard.dataset.requiredSkills.split(',');
-            
-            requiredSkills.forEach(skill => {
-                if (skill) {
-                    const skillSpan = document.createElement('span');
-                    skillSpan.className = matchedSkills.includes(skill) ? 'skill matched' : 'skill missing';
-                    skillSpan.textContent = skill;
-                    skillsList.appendChild(skillSpan);
-                }
-            });
-            
-            // Set up application form
-            const applicationForm = document.getElementById('modal-application-form');
-            applicationForm.action = `/apply/${jobId}`;
-            
-            if (jobCard.querySelector('.btn-applied')) {
-                applicationForm.innerHTML = `
-                    <button class="btn btn-applied" disabled>
-                        <i class="fas fa-check-circle"></i> Already Applied
-                    </button>
-                `;
+            if (details.classList.contains('active')) {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                button.innerHTML = 'Hide Details <i class="fas fa-chevron-up"></i>';
             } else {
-                applicationForm.innerHTML = `
-                    <button type="submit" class="btn btn-primary">Apply Now</button>
-                `;
-                applicationForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    handleJobApplication(this, this.querySelector('button'));
-                });
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                button.innerHTML = 'View Details <i class="fas fa-chevron-down"></i>';
             }
+        }
+        
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage < 1) return;
             
-            // Show modal
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (newPage > totalPages) return;
+            
+            currentPage = newPage;
+            updatePagination();
         }
-        
-        // 10. Close modal
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+    </script>
+
     
-        // 11. Event listeners
-        document.getElementById('job-type-filter').addEventListener('change', filterJobs);
-        document.getElementById('sort-by').addEventListener('change', filterJobs);
-        document.getElementById('reset-filters').addEventListener('click', () => {
-            document.getElementById('job-type-filter').value = 'all';
-            document.getElementById('sort-by').value = 'match';
-            jobSearch.value = '';
-            filterJobs();
-        });
-        
-        document.querySelector('.btn-prev').addEventListener('click', () => changePage(-1));
-        document.querySelector('.btn-next').addEventListener('click', () => changePage(1));
-        
-        // Keyboard navigation support
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                document.querySelector('.btn-prev').click();
-            } else if (e.key === 'ArrowRight') {
-                document.querySelector('.btn-next').click();
-            } else if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-        
-        // Job application forms
-        document.querySelectorAll('.job-application-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const button = this.querySelector('button[type="submit"]');
-                handleJobApplication(this, button);
-            });
-        });
-        
-        // Details buttons
-        document.querySelectorAll('.btn-details').forEach(btn => {
-            btn.addEventListener('click', showJobDetails);
-        });
-        
-        // Close modal buttons
-        closeModalBtn.addEventListener('click', closeModal);
-        document.querySelector('.modal-actions .close-modal').addEventListener('click', closeModal);
-        
-        // Close modal when clicking outside content
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-    
-        // 12. Initialize
-        filterJobs();
-    });
-</script>
+<section id="applied_jobs">
+    <h2>Jobs You Have Applied For</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Job Type</th>
+                <th>Applied On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for applied_job in applied_jobs %}
+            <tr>
+                <td>{{ applied_job.job.job_title }}</td>
+                <td>{{ applied_job.job.company }}</td>
+                <td>{{ applied_job.job.location }}</td>
+                <td>{{ applied_job.job.job_type }}</td>
+                <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ applied_job.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">You have not applied to any jobs yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+</main>
 {% endblock %}
