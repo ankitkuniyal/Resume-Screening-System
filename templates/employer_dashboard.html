@@ -3,6 +3,19 @@
 {% block title %}{{ employer_name }}'s Dashboard{% endblock %}
 {% block styles %}
 <link rel="stylesheet" href="../static/css/employer_dashboard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+<style>
+    /* Add this CSS to ensure details and edit forms are hidden by default */
+    .job-row-details,
+    .edit-form-container {
+        display: none;
+    }
+    
+    .job-row-details.active,
+    .edit-form-container.active {
+        display: table-row;
+    }
+</style>
 {% endblock %}
 {% block content %}
 <header class="dashboard-header">
@@ -11,86 +24,401 @@
         <ul>
             <li><a href="{{ url_for('employer_dashboard') }}" class="nav-link active">Dashboard</a></li>
             <li><a href="{{ url_for('post_job') }}" class="nav-link">Post New Job</a></li>
+            <li><a href="#jobListing" class="nav-link">Job Listing</a></li>
             <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
         </ul>
     </nav>
 </header>
 
 <main class="dashboard-main">
-    <section class="job-listings-section">
-        <div class="section-header">
-            <h2>My Job Listings</h2>
+    <!-- Analytics Section -->
+    <section class="analytics-section">
+        <div class="analytics-cards">
+            <div class="analytics-card">
+                <h3>Total Jobs Posted</h3>
+                <div class="card-value">{{ total_jobs_count }}</div>
+                <div class="card-trend"><i class="fas fa-chart-line"></i> {{ (total_jobs_count/30)*100|round(1) }}% this month</div>
+            </div>
+            <div class="analytics-card">
+                <h3>Active Jobs</h3>
+                <div class="card-value">{{ active_jobs_count }}</div>
+                <div class="card-trend"><i class="fas fa-users"></i> {{ (active_jobs_count/total_jobs_count)*100|round(1) }}% of total</div>
+            </div>
+            <div class="analytics-card">
+                <h3>Total Applicants</h3>
+                <div class="card-value">{{ total_applicants }}</div>
+                <div class="card-trend"><i class="fas fa-bolt"></i> {{ (total_applicants/active_jobs_count)|round(1) }} per job</div>
+            </div>
+            <div class="analytics-card">
+                <h3>New Applicants</h3>
+                <div class="card-value">{{ new_applicants_count }}</div>
+                <div class="card-trend"><i class="fas fa-arrow-up"></i> Last 7 days</div>
+            </div>
         </div>
-        
-        {% if jobs_posted %}
-            <div class="jobs-table-container">
-                <table class="jobs-table">
-                    <thead>
-                        <tr>
-                            <th>Job Title</th>
-                            <th>Location</th>
-                            <th>Type</th>
-                            <th>Salary</th>
-                            <th>Applications</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                            <th>Screen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for job in jobs_posted %}
-                        <tr>
-                            <td>{{ job.job_title }}</td>
-                            <td>{{ job.location }}</td>
-                            <td>{{ job.job_type }}</td>
-                            <td>{{ job.salary or 'Negotiable' }}</td>
-                            <td>
-                                {% set applicant_count = job.applicants|length %}
-                                {% if applicant_count > 0 %}
-                                    <a class="btn btn-view">
-                                        {{ applicant_count }}
-                                    </a>
-                                {% else %}
-                                    <span class="no-applicants">0 </span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="status-badge {% if job.applicants|length > 0 %}status-active{% else %}status-inactive{% endif %}">
-                                    {% if job.applicants|length > 0 %}Active{% else %}No Applicants{% endif %}
-                                </span>
-                            </td>
-                            <td class="action"><button class="btn btn-delete" onclick="confirmDelete('{{ job.id }}')">
-                                <i class="fas fa-trash"></i> Delete
-                            </button></td>
-                            <td class="screen">
-                                {% if job.applicants|length > 0 %}
-                                    <button onclick="window.location.href='{{ url_for('view_applicants', job_id=job.id, filter='all') }}'" class="btn btn-screen">
-                                        <i class="fas fa-filter"></i> Screen Applicants
+
+        <div class="analytics-charts">
+            <div class="chart-container">
+                <canvas id="applicationsChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="jobTypesChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Job Listings Section -->
+    <section class="job-listings-section" id="jobListing">
+        <div class="section" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9;">
+            <div class="section-header">
+                <h2>My Job Listings</h2>
+                <div class="job-search">
+                    <input type="text" id="jobSearch" placeholder="Search jobs...">
+                    <button class="btn btn-search">Search<i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            
+            {% if jobs_posted %}
+                <div class="jobs-table-container">
+                    <table class="jobs-table">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Location</th>
+                                <th>Type</th>
+                                <th>Salary</th>
+                                <th>Applications</th>
+                                <th>Posted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in jobs_posted %}
+                            <tr data-job-id="{{ job.id }}">
+                                <td>{{ job.job_title }}</td>
+                                <td>{{ job.location }}</td>
+                                <td>{{ job.job_type }}</td>
+                                <td>{{ job.salary or 'Negotiable' }}</td>
+                                <td>
+                                    {% set applicant_count = job.applicants|length %}
+                                    {{ applicant_count }} Applicants
+                                </td>
+                                <td>{{ job.posted_date.strftime('%b %d, %Y') }}</td>
+                                <td class="actions">
+                                    <button class="btn btn-edit" onclick="toggleEditForm('{{ job.id }}')">
+                                        <i class="fas fa-edit"></i> Edit
                                     </button>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center">No jobs posted yet</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="no-jobs">
-                <p>You haven't posted any jobs yet.</p>
-                <a href="{{ url_for('post_job') }}" class="btn btn-primary">Post Your First Job</a>
-            </div>
-        {% endif %}
+                                    <button class="btn btn-delete" onclick="confirmDelete('{{ job.id }}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                    <button class="btn btn-details" onclick="toggleDetails('{{ job.id }}')">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
+                                    
+                                    {% if applicant_count > 0 %}
+                                    <a href="{{ url_for('view_applicants', job_id=job.id, filter='all') }}" class="btn btn-view">
+                                        Screen Applicant <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            
+                            <!-- Details Row -->
+                            <tr class="job-row-details" id="details-{{ job.id }}">
+                                <td colspan="7">
+                                    <div class="job-details-content">
+                                        <div class="job-detail-group">
+                                            <span class="job-detail-label">Company:</span>
+                                            <span class="job-detail-value">{{ job.company }}</span>
+                                        </div>
+                                        <div class="job-detail-group">
+                                            <span class="job-detail-label">Location:</span>
+                                            <span class="job-detail-value">{{ job.location }}</span>
+                                        </div>
+                                        <div class="job-detail-group">
+                                            <span class="job-detail-label">Job Type:</span>
+                                            <span class="job-detail-value">{{ job.job_type }}</span>
+                                        </div>
+                                        <div class="job-detail-group">
+                                            <span class="job-detail-label">Salary:</span>
+                                            <span class="job-detail-value">{{ job.salary or 'Negotiable' }}</span>
+                                        </div>
+                                        <div class="job-detail-group">
+                                            <span class="job-detail-label">Posted Date:</span>
+                                            <span class="job-detail-value">{{ job.posted_date.strftime('%b %d, %Y') }}</span>
+                                        </div>
+                                        <div class="job-detail-group form-group-full">
+                                            <span class="job-detail-label">Description:</span>
+                                            <div class="job-detail-value">{{ job.description }}</div>
+                                        </div>
+                                        <div class="job-detail-group form-group-full">
+                                            <span class="job-detail-label">Required Skills:</span>
+                                            <div class="skills-container">
+                                                {% for skill in job.required_skills or [] %}
+                                                    <span class="skill-tag">{{ skill }}</span>
+                                                {% else %}
+                                                    <span>No specific skills required</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Form Row -->
+                            <tr class="edit-form-container" id="edit-{{ job.id }}">
+                                <td colspan="7">
+                                    <form class="edit-job-form" onsubmit="saveJobChanges(event, '{{ job.id }}')">
+                                        <input type="hidden" name="job_id" value="{{ job.id }}">
+                                        
+                                        <div class="form-group">
+                                            <label for="edit-job-title-{{ job.id }}">Job Title</label>
+                                            <input type="text" id="edit-job-title-{{ job.id }}" name="job_title" value="{{ job.job_title }}" required>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="edit-company-{{ job.id }}">Company</label>
+                                            <input type="text" id="edit-company-{{ job.id }}" name="company" value="{{ job.company }}" required>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="edit-location-{{ job.id }}">Location</label>
+                                            <input type="text" id="edit-location-{{ job.id }}" name="location" value="{{ job.location }}" required>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="edit-job-type-{{ job.id }}">Job Type</label>
+                                            <select id="edit-job-type-{{ job.id }}" name="job_type" required>
+                                                <option value="Full-time" {% if job.job_type == 'Full-time' %}selected{% endif %}>Full-time</option>
+                                                <option value="Part-time" {% if job.job_type == 'Part-time' %}selected{% endif %}>Part-time</option>
+                                                <option value="Contract" {% if job.job_type == 'Contract' %}selected{% endif %}>Contract</option>
+                                                <option value="Internship" {% if job.job_type == 'Internship' %}selected{% endif %}>Internship</option>
+                                                <option value="Remote" {% if job.job_type == 'Remote' %}selected{% endif %}>Remote</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="edit-salary-{{ job.id }}">Salary</label>
+                                            <input type="text" id="edit-salary-{{ job.id }}" name="salary" value="{{ job.salary or '' }}">
+                                        </div>
+                                        
+                                        <div class="form-group form-group-full">
+                                            <label for="edit-description-{{ job.id }}">Description</label>
+                                            <textarea id="edit-description-{{ job.id }}" name="description" rows="5" required>{{ job.description }}</textarea>
+                                        </div>
+                                        
+                                        <div class="form-group form-group-full">
+                                            <label for="edit-skills-{{ job.id }}">Required Skills (comma separated)</label>
+                                            <input type="text" id="edit-skills-{{ job.id }}" name="skills" 
+                                                   value="{{ job.required_skills|join(', ') if job.required_skills else '' }}"
+                                                   placeholder="e.g., Python, JavaScript, Project Management">
+                                        </div>
+                                        
+                                        <div class="form-actions">
+                                            <button type="button" class="btn btn-cancel" onclick="toggleEditForm('{{ job.id }}')">Cancel</button>
+                                            <button type="submit" class="btn btn-save">Save Changes</button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="no-jobs">
+                    <p>You haven't posted any jobs yet.</p>
+                    <a href="{{ url_for('post_job') }}" class="btn btn-primary">Post Your First Job</a>
+                </div>
+            {% endif %}
+        </div>
     </section>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
+// Chart data from server (you'll need to pass this from your route)
+const chartData = {
+    applications: {
+        labels: {{ application_trends.labels|tojson }},
+        data: {{ application_trends.data|tojson }}
+    },
+    jobTypes: {
+        labels: {{ job_type_distribution.labels|tojson }},
+        data: {{ job_type_distribution.data|tojson }}
+    }
+};
+
+// Initialize charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Applications Trend Chart
+    const appsCtx = document.getElementById('applicationsChart').getContext('2d');
+    new Chart(appsCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.applications.labels,
+            datasets: [{
+                label: 'Applications Received',
+                data: chartData.applications.data,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Applications Trend (Last 30 Days)'
+                }
+            }
+        }
+    });
+
+    // Job Types Distribution Chart
+    const typesCtx = document.getElementById('jobTypesChart').getContext('2d');
+    new Chart(typesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.jobTypes.labels,
+            datasets: [{
+                data: chartData.jobTypes.data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Job Types Distribution'
+                }
+            }
+        }
+    });
+
+    // Job search functionality
+    document.getElementById('jobSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.jobs-table tbody tr[data-job-id]');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+});
+
+// Toggle job details visibility
+function toggleDetails(jobId) {
+    const detailsRow = document.getElementById(`details-${jobId}`);
+    const editRow = document.getElementById(`edit-${jobId}`);
+    
+    // Close edit form if open
+    if (editRow && editRow.classList.contains('active')) {
+        editRow.classList.remove('active');
+    }
+    
+    // Toggle details
+    if (detailsRow) {
+        detailsRow.classList.toggle('active');
+    }
+}
+
+// Toggle edit form visibility
+function toggleEditForm(jobId) {
+    const editRow = document.getElementById(`edit-${jobId}`);
+    const detailsRow = document.getElementById(`details-${jobId}`);
+    
+    // Close details if open
+    if (detailsRow && detailsRow.classList.contains('active')) {
+        detailsRow.classList.remove('active');
+    }
+    
+    // Toggle edit form
+    if (editRow) {
+        editRow.classList.toggle('active');
+    }
+}
+
+// Save job changes
+async function saveJobChanges(event, jobId) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    const jobData = {
+        job_title: formData.get('job_title'),
+        company: formData.get('company'),
+        location: formData.get('location'),
+        job_type: formData.get('job_type'),
+        salary: formData.get('salary'),
+        description: formData.get('description'),
+        required_skills: formData.get('skills')
+            .split(',')
+            .map(skill => skill.trim())
+            .filter(skill => skill)
+    };
+    
+    try {
+        const response = await fetch(`/api/job/${jobId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jobData)
+        });
+        
+        if (response.ok) {
+            alert('Job updated successfully!');
+            // Close the edit form and refresh the page
+            toggleEditForm(jobId);
+            location.reload(); // Refresh to show changes
+        } else {
+            throw new Error('Failed to update job');
+        }
+    } catch (error) {
+        console.error('Error updating job:', error);
+        alert('Failed to update job');
+    }
+}
+
 function confirmDelete(jobId) {
     if (confirm("Are you sure you want to delete this job listing? This action cannot be undone.")) {
-        window.location.href = "/delete_job/" + jobId;
+        // Use POST method instead of DELETE for better compatibility
+        fetch(`/delete_job/${jobId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'  // Helps identify AJAX requests
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                // Reload the page to reflect the changes
+                location.reload();
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting job:', error);
+            alert(error.message || 'Failed to delete job');
+        });
     }
 }
 </script>

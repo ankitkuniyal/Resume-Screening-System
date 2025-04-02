@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, session, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import re
 import random
@@ -109,6 +109,24 @@ def initialize_data():
 with app.app_context():
     db.create_all()
     initialize_data()
+
+@app.template_filter('time_ago')
+def time_ago_filter(dt):
+    now = datetime.utcnow()
+    diff = now - dt
+    
+    if diff.days > 365:
+        return f"{diff.days // 365} year{'s' if diff.days // 365 > 1 else ''} ago"
+    elif diff.days > 30:
+        return f"{diff.days // 30} month{'s' if diff.days // 30 > 1 else ''} ago"
+    elif diff.days > 0:
+        return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
+    elif diff.seconds > 3600:
+        return f"{diff.seconds // 3600} hour{'s' if diff.seconds // 3600 > 1 else ''} ago"
+    elif diff.seconds > 60:
+        return f"{diff.seconds // 60} minute{'s' if diff.seconds // 60 > 1 else ''} ago"
+    else:
+        return "just now"
 
 # Home route
 @app.route('/')
@@ -358,9 +376,39 @@ def employer_dashboard():
 
     jobs_posted = Job.query.filter_by(employer_id=employer.id).all()
 
+    # Calculate stats for the overview cards
+    active_jobs_count = sum(1 for job in jobs_posted if job.applicants)
+    total_applicants = sum(len(job.applicants) for job in jobs_posted)
+    new_applicants_count = sum(1 for job in jobs_posted for app in job.applicants 
+                          if app.application_date > datetime.utcnow() - timedelta(days=7))
+    
+    # Prepare chart data
+    # Application trends (last 30 days)
+    application_trends = {
+        'labels': [(datetime.utcnow() - timedelta(days=i)).strftime('%b %d') 
+                 for i in range(29, -1, -1)],
+        'data': [sum(1 for job in jobs_posted 
+                for app in job.applicants 
+                if app.application_date.date() == (datetime.utcnow() - timedelta(days=i)).date())
+                for i in range(29, -1, -1)]
+    }
+    
+    # Job type distribution
+    job_types = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote']
+    job_type_distribution = {
+        'labels': job_types,
+        'data': [sum(1 for job in jobs_posted if job.job_type == typ) for typ in job_types]
+    }
+    
     return render_template('employer_dashboard.html',
                          employer_name=user.username,
-                         jobs_posted=jobs_posted)
+                         jobs_posted=jobs_posted,
+                         active_jobs_count=active_jobs_count,
+                         total_applicants=total_applicants,
+                         new_applicants_count=new_applicants_count,
+                         total_jobs_count=len(jobs_posted),
+                         application_trends=application_trends,
+                         job_type_distribution=job_type_distribution)
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
@@ -678,12 +726,12 @@ def view_resume(applicant_id):
     
     return send_from_directory(os.path.join(app.root_path, 'static/resumes'), applicant.resume)
 
-@app.route('/delete_job/<int:job_id>', methods=['GET','POST'])
+@app.route('/delete_job/<int:job_id>', methods=['POST', 'DELETE'])  # Allow both POST and DELETE
 def delete_job(job_id):
     # Authentication check
     if 'user_id' not in session or session['role'] != 'employer':
         flash('Unauthorized access!', 'danger')
-        return redirect(url_for('login'))
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 401
 
     try:
         # Get the job and verify ownership
@@ -692,7 +740,7 @@ def delete_job(job_id):
         
         if not employer or job.employer_id != employer.id:
             flash('You can only delete your own job postings', 'danger')
-            return redirect(url_for('employer_dashboard'))
+            return jsonify({'success': False, 'message': 'Not authorized to delete this job'}), 403
 
         # Delete all applications first (due to foreign key constraint)
         AppliedJob.query.filter_by(job_id=job_id).delete()
@@ -701,15 +749,19 @@ def delete_job(job_id):
         db.session.delete(job)
         db.session.commit()
         
-        flash('Job posting deleted successfully', 'success')
-        return redirect(url_for('employer_dashboard'))
+        return jsonify({
+            'success': True,
+            'message': 'Job posting deleted successfully',
+            'redirect': url_for('employer_dashboard')
+        })
 
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting job: {str(e)}', 'danger')
         app.logger.error(f"Error deleting job {job_id}: {str(e)}")
-        return redirect(url_for('employer_dashboard'))
-
+        return jsonify({
+            'success': False,
+            'message': f'Error deleting job: {str(e)}'
+        }), 500
 #Profile Route
 @app.route('/applicant/profile', methods=['GET', 'POST'])
 def applicant_profile():
@@ -776,6 +828,38 @@ def applicant_profile():
                          current_skill_ids=current_skill_ids,
                          datetime=datetime)
 
+@app.route('/api/job/<int:job_id>', methods=['GET', 'PUT'])
+def api_job(job_id):
+    if 'user_id' not in session or session['role'] != 'employer':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    job = Job.query.get_or_404(job_id)
+    
+    if request.method == 'GET':
+        return jsonify({
+            'id': job.id,
+            'job_title': job.job_title,
+            'company': job.company,
+            'location': job.location,
+            'job_type': job.job_type,
+            'salary': job.salary,
+            'description': job.description,
+            'posted_date': job.posted_date.isoformat(),
+            'required_skills': job.required_skills or []
+        })
+    
+    elif request.method == 'PUT':
+        data = request.get_json()
+        job.job_title = data['job_title']
+        job.company = data['company']
+        job.location = data['location']
+        job.job_type = data['job_type']
+        job.salary = data['salary']
+        job.description = data['description']
+        job.required_skills = data['required_skills']
+        db.session.commit()
+        return jsonify({'success': True})
+    
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
