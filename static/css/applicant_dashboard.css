@@ -984,8 +984,92 @@ tbody tr:hover {
   color: var(--gray);
 }
 
+<<<<<<< HEAD
 
+=======
+/* Additional styles for expanded rows */
+.job-row-details {
+  display: none;
+  padding: 1rem;
+  background-color: var(--light);
+  border-left: 4px solid var(--primary);
+}
 
+.job-row-details.active {
+  display: table-row;
+}
+
+.job-row-details td {
+  padding: 1.5rem;
+}
+
+.job-details-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.job-detail-group {
+  margin-bottom: 1rem;
+}
+
+.job-detail-label {
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.job-detail-value {
+  color: var(--dark);
+}
+
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  background: var(--primary-light);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+>>>>>>> 435134c2e7b46069cb9ff0a7576bf94556f9d02c
+
+.edit-form-container {
+  display: none;
+  padding: 1.5rem;
+  background-color: var(--light);
+  border-left: 4px solid var(--warning);
+}
+
+.edit-form-container.active {
+  display: table-row;
+}
+
+.edit-form-container td {
+  padding: 1.5rem;
+}
+
+.edit-job-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group-full {
+  grid-column: span 2;
+}
+
+.form-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
 /* ===== Responsive Styles ===== */
 @media (max-width: 768px) {
   header {

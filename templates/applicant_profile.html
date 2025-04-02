@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block styles %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../static/css/applicant_profile.css">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <header class="profile-header">
+        <h1>{{ user.username }}'s Profile</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('applicant_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="profile-content">
+        <div class="profile-actions">
+            <button id="edit-profile-btn" class="btn-edit">Edit Profile</button>
+        </div>
+
+        <!-- View Mode -->
+        <div id="view-mode">
+            <section class="profile-section">
+                <h2>Personal Information</h2>
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Full Name:</span>
+                        <span class="detail-value">{{ user.username }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">{{ user.email }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Phone:</span>
+                        <span class="detail-value">{{ user.phone if user.phone else 'Not provided' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date of Birth:</span>
+                        <span class="detail-value">{{ applicant.dob.strftime('%Y-%m-%d') if applicant.dob else 'Not provided' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Gender:</span>
+                        <span class="detail-value">{{ applicant.gender if applicant.gender else 'Not provided' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Address:</span>
+                        <span class="detail-value">{{ applicant.address if applicant.address else 'Not provided' }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-section">
+                <h2>Education & Experience</h2>
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Highest Qualification:</span>
+                        <span class="detail-value">{{ applicant.highest_qualification if applicant.highest_qualification else 'Not provided' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Field of Study:</span>
+                        <span class="detail-value">{{ applicant.field_of_study if applicant.field_of_study else 'Not provided' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Years of Experience:</span>
+                        <span class="detail-value">
+                            {% if applicant.experience_years %}
+                                {{ applicant.experience_years }} Year{% if applicant.experience_years > 1 %}s{% endif %}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Resume:</span>
+                        <span class="detail-value">
+                            {% if applicant.resume_link %}
+                                <a href="{{ applicant.resume_link }}" target="_blank" class="resume-link">View Resume</a>
+                            {% else %}
+                                Not uploaded
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-section">
+                <h2>Skills</h2>
+                <div class="skills-container">
+                    {% for skill in applicant.skills %}
+                        <span class="skill-tag">{{ skill.skill.skill_name }}</span>
+                    {% else %}
+                        <span>No skills added yet</span>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Edit Mode (initially hidden) -->
+        <form id="edit-mode" class="hidden" action="{{ url_for('applicant_profile') }}" method="POST">
+            <section class="profile-section">
+                <h2>Personal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-name">Full Name</label>
+                        <input type="text" id="edit-name" name="name" value="{{ user.username }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">Email</label>
+                        <input type="email" id="edit-email" name="email" value="{{ user.email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-phone">Phone</label>
+                        <input type="tel" id="edit-phone" name="phone" value="{{ user.phone if user.phone else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-dob">Date of Birth</label>
+                        <input type="date" id="edit-dob" name="dob" 
+                               value="{{ applicant.dob.strftime('%Y-%m-%d') if applicant.dob else '' }}" 
+                               max="{{ datetime.now().strftime('%Y-%m-%d') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-gender">Gender</label>
+                        <select id="edit-gender" name="gender">
+                            <option value="">Select gender</option>
+                            <option value="male" {% if applicant.gender == 'male' %}selected{% endif %}>Male</option>
+                            <option value="female" {% if applicant.gender == 'female' %}selected{% endif %}>Female</option>
+                            <option value="other" {% if applicant.gender == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-address">Address</label>
+                        <input type="text" id="edit-address" name="address" value="{{ applicant.address if applicant.address else '' }}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-section">
+                <h2>Education & Experience</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-qualification">Highest Qualification</label>
+                        <select id="edit-qualification" name="highest_qualification">
+                            <option value="">Select qualification</option>
+                            <option value="High School" {% if applicant.highest_qualification == 'High School' %}selected{% endif %}>High School</option>
+                            <option value="Diploma" {% if applicant.highest_qualification == 'Diploma' %}selected{% endif %}>Diploma</option>
+                            <option value="Bachelor's" {% if applicant.highest_qualification == 'Bachelor\'s' %}selected{% endif %}>Bachelor's</option>
+                            <option value="Master's" {% if applicant.highest_qualification == 'Master\'s' %}selected{% endif %}>Master's</option>
+                            <option value="PhD" {% if applicant.highest_qualification == 'PhD' %}selected{% endif %}>PhD</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-field">Field of Study</label>
+                        <select id="edit-field" name="field_of_study">
+                            <option value="">Select field of study</option>
+                            <option value="Computer Science" {% if applicant.field_of_study == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                            <option value="Engineering" {% if applicant.field_of_study == 'Engineering' %}selected{% endif %}>Engineering</option>
+                            <option value="Business Administration" {% if applicant.field_of_study == 'Business Administration' %}selected{% endif %}>Business Administration</option>
+                            <option value="Medicine" {% if applicant.field_of_study == 'Medicine' %}selected{% endif %}>Medicine</option>
+                            <option value="Law" {% if applicant.field_of_study == 'Law' %}selected{% endif %}>Law</option>
+                            <option value="Arts" {% if applicant.field_of_study == 'Arts' %}selected{% endif %}>Arts</option>
+                            <option value="Education" {% if applicant.field_of_study == 'Education' %}selected{% endif %}>Education</option>
+                            <option value="Science" {% if applicant.field_of_study == 'Science' %}selected{% endif %}>Science</option>
+                            <option value="Other" {% if applicant.field_of_study == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-experience">Years of Experience</label>
+                        <select id="edit-experience" name="experience_years">
+                            {% for i in range(0, 11) %}
+                                <option value="{{ i }}" {% if applicant.experience_years == i %}selected{% endif %}>
+                                    {% if i == 0 %}0 (Fresher){% else %}{{ i }} Year{% if i > 1 %}s{% endif %}{% endif %}
+                                </option>
+                            {% endfor %}
+                            <option value="11" {% if applicant.experience_years and applicant.experience_years > 10 %}selected{% endif %}>10+ Years</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-resume">Resume Link (Google Drive)</label>
+                        <input type="text" id="edit-resume" name="resume_link" 
+                               value="{{ applicant.resume_link if applicant.resume_link else '' }}" 
+                               placeholder="https://drive.google.com/...">
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-section">
+                <h2>Skills</h2>
+                <div class="skills-edit-container">
+                    <div class="checkbox-group">
+                        {% for skill in all_skills %}
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="skills" value="{{ skill.id }}" 
+                                       {% if skill.id in current_skill_ids %}checked{% endif %}> 
+                                {{ skill.skill_name }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="button" id="cancel-edit-btn" class="btn-cancel">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all DOM elements
+    const editBtn = document.getElementById('edit-profile-btn');
+    const cancelBtn = document.getElementById('cancel-edit-btn');
+    const viewMode = document.getElementById('view-mode');
+    const editMode = document.getElementById('edit-mode');
+    const form = document.getElementById('edit-mode');
+
+    // Toggle between view and edit modes
+    editBtn.addEventListener('click', function() {
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+        // Reset form to original values if needed
+        location.reload(); // Simple solution to reset form
+    });
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('error');
+                isValid = false;
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            const firstError = form.querySelector('.error');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstError.focus();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %} 
+{% block title %}Screener{% endblock %}
 {% block styles %}
 <link
   rel="stylesheet"
@@ -6,9 +7,9 @@
 />
 {% endblock %} {% block content %}
 <div class="container mt-4">
-  <h2 style="display:flex; justify-content: space-between; font-size: 15px; height: 40px; align-items: center;" >Applicants for {{ job.job_title }} at {{ job.company }}  <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary"
-    >Back to Dashboard</a
-  ></h2>
+  <h2 style="display:flex; justify-content: space-between; font-size: 25px; height: 40px; align-items: center;" >Applicants for {{ job.job_title }} at {{ job.company }}  
+    <a href="{{ url_for('employer_dashboard') }}" class="btn btn-secondary" style="font-size: 14px;">Back to Dashboard</a>
+  </h2>
   
   <p><strong>Required Skills:</strong> {{ job.required_skills|join(', ') }}</p>
 
@@ -154,7 +155,7 @@
                 {% if applicant['resume_link'] %}
                   <a href="{{ applicant['resume_link'] }}" target="_blank" class="btn btn-sm btn-info" style="text-decoration: none;">ViewResume</a>
                 {% else %}
-                  <span class="btn btn-sm btn-info" >No Resume uploaded</span>
+                  <span class="btn btn-sm btn-secondary" style="pointer-events: none; opacity: 0.6;">NoResume</span>
                 {% endif %}
               <form
                 method="POST"
