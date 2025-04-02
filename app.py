@@ -251,8 +251,17 @@ def register_employer():
         password = request.form['login_password']
         website = request.form['website']
 
+        # Validation
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            flash('Invalid email!', 'danger')
+            return redirect(url_for('register_employer'))
+
         if User.query.filter_by(email=email).first():
             flash('Email already exists!', 'danger')
+            return redirect(url_for('register_employer'))
+
+        if len(password) < 8:
+            flash('Password too short!', 'danger')
             return redirect(url_for('register_employer'))
 
         # Create user
