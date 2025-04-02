@@ -11,7 +11,7 @@
   --gray: #596780;
   --gray-light: #dde1e7;
   --success: #10b981;
-  --danger: #ef233c;
+  --danger: #e43348;
   --warning: #fb8500;
   --white: #ffffff;
   --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-light));
@@ -223,53 +223,95 @@ h2 + p {
 }
 
 /* Improved Button Styles */
+/* ===== TABLE ACTION BUTTONS ===== */
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
 .btn {
-  font-weight: 600;
-  padding: 9px 18px;
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
+/* View Resume Button */
 .btn-info {
-  background-color: rgba(67, 97, 238, 0.15);
-  color: var(--primary-light);
-  border: 1px solid rgba(67, 97, 238, 0.3);
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
 }
 
 .btn-info:hover {
-  background-color: rgba(67, 97, 238, 0.25);
+  background: #bae6fd;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+/* Accept Button */
 .btn-success {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: var(--success);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .btn-success:hover {
-  background-color: rgba(16, 185, 129, 0.25);
+  background: #bbf7d0;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+/* Reject Button */
 .btn-danger {
-  background-color: rgba(239, 35, 60, 0.15);
-  color: var(--danger);
-  border: 1px solid rgba(239, 35, 60, 0.3);
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 .btn-danger:hover {
-  background-color: rgba(239, 35, 60, 0.25);
+  background: #fecaca;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+/* No Resume Button */
+.btn-secondary {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  cursor: not-allowed;
+}
+
+/* Button icons */
+.btn i {
+  font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-group {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  
+  .btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
 /* Enhanced Back to Dashboard Button */
 .btn-secondary {
   background:  linear-gradient(135deg, #d6cfdd, hwb(270 71% 22% / 0.817));

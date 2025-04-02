@@ -193,6 +193,8 @@ def register_applicant():
         if len(password) < 8:
             flash('Password too short!', 'danger')
             return redirect(url_for('register_applicant'))
+    
+     
         
         if not re.match(r"https://drive\.google\.com/.*", resume_link):
              flash('Please enter a valid Google Drive link.', 'danger')

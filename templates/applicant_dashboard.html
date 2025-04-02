@@ -297,37 +297,124 @@
         </div>
     </section>
 
-    <section id="applied_jobs">
-        <h2>Jobs You Have Applied For</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Job Title</th>
-                    <th>Company</th>
-                    <th>Location</th>
-                    <th>Job Type</th>
-                    <th>Applied On</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for applied_job in applied_jobs %}
-                <tr>
-                    <td>{{ applied_job.job.job_title }}</td>
-                    <td>{{ applied_job.job.company }}</td>
-                    <td>{{ applied_job.job.location }}</td>
-                    <td>{{ applied_job.job.job_type }}</td>
-                    <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
-                    <td>{{ applied_job.status }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="6">You have not applied to any jobs yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+    <script>
+        let currentPage = 1;
+        const jobsPerPage = 6;
+        let filteredJobs = Array.from(document.querySelectorAll('.job-card'));
+        
+        function toggleDetails(button) {
+            const card = button.closest('.job-card');
+            const details = card.querySelector('.job-details');
+            const icon = button.querySelector('i');
+            
+            details.classList.toggle('active');
+            
+            if (details.classList.contains('active')) {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                button.innerHTML = 'Hide Details <i class="fas fa-chevron-up"></i>';
+            } else {
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                button.innerHTML = 'View Details <i class="fas fa-chevron-down"></i>';
+            }
+        }
+        
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage < 1) return;
+            
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (newPage > totalPages) return;
+            
+            currentPage = newPage;
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const start = (currentPage - 1) * jobsPerPage;
+            const end = start + jobsPerPage;
+            
+            // Hide all jobs
+            document.querySelectorAll('.job-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show current page jobs
+            filteredJobs.slice(start, end).forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // Update page info
+            document.getElementById('current-page').textContent = currentPage;
+            
+            // Update button states
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            document.querySelector('.btn-prev').disabled = currentPage === 1;
+            document.querySelector('.btn-next').disabled = currentPage === totalPages;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            filteredJobs = Array.from(document.querySelectorAll('.job-card'));
+            updatePagination();
+            
+            // Filter functionality
+            document.getElementById('job-type-filter').addEventListener('change', function() {
+                const type = this.value;
+                filteredJobs = Array.from(document.querySelectorAll('.job-card')).filter(card => {
+                    return type === 'all' || card.dataset.jobType === type;
+                });
+                currentPage = 1;
+                updatePagination();
+            });
+            
+            // Sort functionality
+            document.getElementById('sort-by').addEventListener('change', function() {
+                const sortBy = this.value;
+                filteredJobs.sort((a, b) => {
+                    if (sortBy === 'date') {
+                        return b.dataset.postedDate - a.dataset.postedDate;
+                    } else if (sortBy === 'salary') {
+                        return b.dataset.salary - a.dataset.salary;
+                    } else {
+                        return b.dataset.matchScore - a.dataset.matchScore;
+                    }
+                });
+                currentPage = 1;
+                updatePagination();
+            });
+        });
+        </script>
+<section id="applied_jobs">
+    <h2>Jobs You Have Applied For</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Job Type</th>
+                <th>Applied On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for applied_job in applied_jobs %}
+            <tr>
+                <td>{{ applied_job.job.job_title }}</td>
+                <td>{{ applied_job.job.company }}</td>
+                <td>{{ applied_job.job.location }}</td>
+                <td>{{ applied_job.job.job_type }}</td>
+                <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ applied_job.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">You have not applied to any jobs yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
 </main>
 
 <!-- Job Details Modal -->
