@@ -26,7 +26,11 @@
             </div>
             <div class="progress-step" data-step="4">
                 4
-                <span class="progress-label">Skills & Login</span>
+                <span class="progress-label">Skills</span>
+            </div>
+            <div class="progress-step" data-step="5">
+                5
+                <span class="progress-label">Login Info</span>
             </div>
         </div>
         
@@ -151,22 +155,34 @@
                     </div>
                 </div>
                 
-                <!-- Page 4: Skills and Login - Now always shows skills section -->
+                <!-- Page 4: Skills and Qualifications with Search -->
                 <div class="page" data-page="4">
                     <div class="title">Skills & Qualifications</div>
                     
                     <div class="field" id="skills-section">
+                        <div class="search-container">
+                            <input type="text" id="skill-search" class="search-input" placeholder="Search for skills...">
+                        </div>
                         <div class="label">Select Your Skills</div>
-                        <div class="checkbox-group">
+                        <div class="checkbox-group" id="skills-checkbox-group">
                             {% for skill in skills %}
-                                <label class="checkbox-label">
+                                <label class="checkbox-label skill-item" data-skill="{{ skill.skill_name.lower() }}">
                                     <input type="checkbox" name="skills" value="{{ skill.id }}" /> 
                                     {{ skill.skill_name }}
                                 </label>
                             {% endfor %}
                         </div>
+                        <div id="no-results" class="no-results" style="display: none;">No matching skills found</div>
                     </div>
                     
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev">Previous</button>
+                        <button type="button" class="btn-next">Next Step</button>
+                    </div>
+                </div>
+                
+                <!-- Page 5: Login Information -->
+                <div class="page" data-page="5">
                     <div class="title">Login Information</div>
                     
                     <div class="fields-grid">
@@ -175,22 +191,6 @@
                             <input type="email" name="login_email" id="login_email" required placeholder="Enter your email address" />
                             <small class="hint">This will be used for login.</small>
                         </div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const contactEmail = document.getElementById('email');
-                                const loginEmail = document.getElementById('login_email');
-
-                                // Sync email fields
-                                const syncEmails = (source, target) => {
-                                    source.addEventListener('input', () => {
-                                        target.value = source.value;
-                                    });
-                                };
-
-                                syncEmails(contactEmail, loginEmail);
-                                syncEmails(loginEmail, contactEmail);
-                            });
-                        </script>
                     </div>
                     
                     <div class="fields-grid">
@@ -221,6 +221,19 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Email sync between contact email and login email
+    const contactEmail = document.getElementById('email');
+    const loginEmail = document.getElementById('login_email');
+
+    const syncEmails = (source, target) => {
+        source.addEventListener('input', () => {
+            target.value = source.value;
+        });
+    };
+
+    syncEmails(contactEmail, loginEmail);
+    syncEmails(loginEmail, contactEmail);
+
     // Form navigation
     const pages = document.querySelectorAll('.page');
     const nextBtns = document.querySelectorAll('.btn-next');
@@ -248,10 +261,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (!isValid) {
-                // Scroll to first error
                 const firstError = currentPage.querySelector('.error');
                 if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
                 }
                 return;
             }
@@ -274,12 +289,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentStepNum = parseInt(currentPage.dataset.page);
             const prevStepNum = currentStepNum - 1;
             
-            // Go back to previous page
             currentPage.classList.remove('active');
             const prevPage = document.querySelector(`.page[data-page="${prevStepNum}"]`);
             prevPage.classList.add('active');
             
-            // Update progress bar
             progressSteps[currentStepNum - 1].classList.remove('active');
             progressSteps[prevStepNum - 1].classList.remove('completed');
             progressSteps[prevStepNum - 1].classList.add('active');
@@ -290,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registration-form');
     if (form) {
         form.addEventListener('submit', function(e) {
-            // Validate all required fields
             const requiredFields = form.querySelectorAll('[required]');
             let isValid = true;
             
@@ -303,7 +315,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Password validation
             const password = document.getElementById('password');
             const confirmPassword = document.getElementById('confirm_password');
             const errorElement = document.getElementById('password-match-error');
@@ -322,14 +333,79 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!isValid) {
                 e.preventDefault();
-                // Scroll to first error
                 const firstError = form.querySelector('.error');
                 if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
                 }
             }
         });
     }
+
+    // Skill search functionality
+    const skillSearch = document.getElementById('skill-search');
+    const skillItems = document.querySelectorAll('.skill-item');
+    const skillsCheckboxGroup = document.getElementById('skills-checkbox-group');
+    const noResultsMessage = document.getElementById('no-results');
+
+    skillSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        let hasMatches = false;
+        let visibleCount = 0;
+        
+        skillItems.forEach(item => {
+            const skillName = item.getAttribute('data-skill');
+            const shouldShow = searchTerm === '' || skillName.includes(searchTerm);
+            
+            item.style.display = shouldShow ? 'block' : 'none';
+            
+            if (shouldShow) {
+                hasMatches = true;
+                visibleCount++;
+            }
+        });
+        
+        // Show/hide no results message
+        if (searchTerm && !hasMatches) {
+            noResultsMessage.style.display = 'block';
+            skillsCheckboxGroup.style.display = 'none';
+        } else {
+            noResultsMessage.style.display = 'none';
+            skillsCheckboxGroup.style.display = 'block';
+        }
+        
+        // Auto-scroll to first visible item if searching
+        if (searchTerm && visibleCount > 0) {
+            const firstVisible = document.querySelector('.skill-item[style="display: block;"]');
+            if (firstVisible) {
+                firstVisible.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }
+        }
+    });
+
+    // Clear search when leaving page 4
+    const pagesContainer = document.querySelector('.form-content');
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
+                const activePage = document.querySelector('.page.active');
+                if (activePage && activePage.dataset.page !== '4') {
+                    skillSearch.value = '';
+                    skillSearch.dispatchEvent(new Event('input'));
+                }
+            }
+        });
+    });
+
+    observer.observe(pagesContainer, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
 });
 </script>
 {% endblock %}
