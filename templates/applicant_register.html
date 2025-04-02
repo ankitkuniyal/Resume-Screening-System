@@ -36,185 +36,202 @@
         
         <form action="{{ url_for('register_applicant') }}" method="POST" id="registration-form">
             <div class="form-content">
-                <!-- Page 1: Personal Details -->
-                <div class="page active" data-page="1">
-                    <div class="title">Personal Details</div>
-                    
-                    <div class="fields-grid">
-                        <div class="field">
-                            <label for="name" class="label">Full Name</label>
-                            <input type="text" name="name" id="name" required placeholder="Enter your full name" />
-                        </div>
-                        
-                        <div class="field">
-                            <label for="email" class="label">Email Address</label>
-                            <input type="email" name="email" id="email" required placeholder="Enter your email address" />
-                        </div>
-                    </div>
-                    
-                    <div class="fields-grid">
-                        <div class="field">
-                            <label for="phone" class="label">Mobile Number</label>
-                            <input type="tel" name="phone" id="phone" required placeholder="Enter your mobile number" pattern="[0-9]+" title="Only numbers are allowed" />
-                        </div>
-                        
-                         
-                        <div class="field">
-                            <label for="dob" class="label">Date of Birth</label>
-                            <input type="date" name="dob" id="dob" required max="{{ max_dob }}" />
-                        </div>
-                    </div>
-                    
-                    <div class="fields-grid">
-                        <div class="field">
-                            <label for="gender" class="label">Gender</label>
-                            <select name="gender" id="gender" required>
-                                <option value="" disabled selected>Select gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div class="field">
-                            <label for="address" class="label">Address</label>
-                            <input type="text" name="address" id="address" required placeholder="Enter your full address" />
-                        </div>
-                    </div>
-                    
-                    <div class="form-buttons">
-                        <button type="button" class="btn-next">Next Step</button>
+            <!-- Page 1: Personal Details -->
+            <div class="page active" data-page="1">
+                <div class="title">Personal Details</div>
+                
+                <div class="fields-grid">
+                <div class="field">
+                    <label for="name" class="label">Full Name</label>
+                    <input type="text" name="name" id="name" required placeholder="Enter your full name" maxlength="20" />
+                </div>
+                
+                <div class="field">
+                    <label for="email" class="label">Email Address</label>
+                    <input type="email" name="email" id="email" required placeholder="Enter your email address" maxlength="20" />
+                </div>
+                </div>
+                
+                <div class="fields-grid">
+                <div class="field">
+                    <label for="country_code" class="label">Country Code</label>
+                    <select name="country_code" id="country_code" required>
+                    <option value="" disabled selected>Select country code</option>
+                    <option value="+1">+1 (USA)</option>
+                    <option value="+91">+91 (India)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+61">+61 (Australia)</option>
+                    <option value="+81">+81 (Japan)</option>
+                    <option value="+86">+86 (China)</option>
+                    <option value="+49">+49 (Germany)</option>
+                    <option value="+33">+33 (France)</option>
+                    <option value="+39">+39 (Italy)</option>
+                    <option value="+7">+7 (Russia)</option>
+                    <!-- Add more country codes as needed -->
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="phone" class="label">Mobile Number</label>
+                    <input type="tel" name="phone" id="phone" required placeholder="Enter your mobile number" pattern="[0-9]{10}" title="10 digits mobile number" minlength="10" maxlength="10" />
+                </div>
+                
+                 
+                <div class="field">
+                    <label for="dob" class="label">Date of Birth</label>
+                    <input type="date" name="dob" id="dob" required max="2007-12-31" />
+                </div>
+                </div>
+                
+                <div class="fields-grid">
+                <div class="field">
+                    <label for="gender" class="label">Gender</label>
+                    <select name="gender" id="gender" required>
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="field">
+                    <label for="address" class="label">Address</label>
+                    <input type="text" name="address" id="address" required placeholder="Enter your full address" maxlength="200" />
+                </div>
+                </div>
+                
+                <div class="form-buttons">
+                <button type="button" class="btn-next">Next Step</button>
+                </div>
+            </div>
+            
+            <!-- Page 2: Educational Background -->
+            <div class="page" data-page="2">
+                <div class="title">Educational Background</div>
+                
+                <div class="fields-grid">
+                <div class="field">
+                    <label for="highest_qualification" class="label">Highest Qualification</label>
+                    <select name="highest_qualification" id="highest_qualification" required>
+                    <option value="" disabled selected>Select your qualification</option>
+                    <option value="High School">High School</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Bachelor's">Bachelor's</option>
+                    <option value="Master's">Master's</option>
+                    <option value="PhD">PhD</option>
+                    </select>
+                </div>
+                
+                <div class="field">
+                    <label for="field_of_study" class="label">Field Of Study</label>
+                    <select name="field_of_study" id="field_of_study" required>
+                    <option value="" disabled selected>Select your field of study</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Business Administration">Business Administration</option>
+                    <option value="Medicine">Medicine</option>
+                    <option value="Law">Law</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Education">Education</option>
+                    <option value="Science">Science</option>
+                    <option value="Other">Other</option>
+                    </select>
+                </div>
+                </div>
+                
+                <div class="form-buttons">
+                <button type="button" class="btn-prev">Previous</button>
+                <button type="button" class="btn-next">Next Step</button>
+                </div>
+            </div>
+            
+            <!-- Page 3: Work Experience -->
+            <div class="page" data-page="3">
+                <div class="title">Work Experience</div>
+                
+                <div class="field">
+                <label for="experience_years" class="label">Years of Experience</label>
+                <select name="experience_years" id="experience_years" required>
+                    <option value="" disabled selected>Select Years of Experience</option>
+                    <option value="0">0 (Fresher)</option>
+                    <option value="1">1 Year</option>
+                    <option value="2">2 Years</option>
+                    <option value="3">3 Years</option>
+                    <option value="4">4 Years</option>
+                    <option value="5">5+ Years</option>
+                </select>
+                </div>
+                
+                <div class="field">
+                <div class="label">Upload Resume</div>
+                <input type="text" name="resume_link" id="resume_link" required placeholder="Enter Google Drive link" title="Please enter a valid Google Drive link" class="styled-input" maxlength="200" />
+                <small style="display: block; margin-top: 5px; color: #666;">Only Google Drive links are allowed (e.g., https://drive.google.com/...)</small>
+                </div>
+                
+                <div class="form-buttons">
+                <button type="button" class="btn-prev">Previous</button>
+                <button type="button" class="btn-next">Next Step</button>
+                </div>
+            </div>
+            
+            <!-- Page 4: Skills and Qualifications with Search -->
+            <div class="page" data-page="4">
+                <div class="title">Skills & Qualifications</div>
+                
+                <div class="field" id="skills-section">
+                <div class="search-container">
+                    <input type="text" id="skill-search" class="search-input" placeholder="Search for skills..." maxlength="50">
+                </div>
+                <div class="label">Select Your Skills</div>
+                <div class="checkbox-group" id="skills-checkbox-group">
+                    {% for skill in skills %}
+                    <label class="checkbox-label skill-item" data-skill="{{ skill.skill_name.lower() }}">
+                        <input type="checkbox" name="skills" value="{{ skill.id }}" /> 
+                        {{ skill.skill_name }}
+                    </label>
+                    {% endfor %}
+                </div>
+                <div id="no-results" class="no-results" style="display: none;">No matching skills found</div>
+                </div>
+                
+                <div class="form-buttons">
+                <button type="button" class="btn-prev">Previous</button>
+                <button type="button" class="btn-next">Next Step</button>
+                </div>
+            </div>
+            
+            <!-- Page 5: Login Information -->
+            <div class="page" data-page="5">
+                <div class="title">Login Information</div>
+                
+                <div class="fields-grid">
+                <div class="field">
+                    <label for="login_email" class="label">Email Address</label>
+                    <input type="email" name="login_email" id="login_email" required placeholder="Enter your email address" maxlength="100" />
+                    <small class="hint">This will be used for login.</small>
+                </div>
+                </div>
+                
+                <div class="fields-grid">
+                <div class="field"></div>
+                    <label for="password" class="label">Password</label>
+                    <input type="password" name="password" id="password" required placeholder="Create a strong password" maxlength="50" />
+                    <div class="password-requirements">
+                    Password must be at least 8 characters long.
                     </div>
                 </div>
                 
-                <!-- Page 2: Educational Background -->
-                <div class="page" data-page="2">
-                    <div class="title">Educational Background</div>
-                    
-                    <div class="fields-grid">
-                        <div class="field">
-                            <label for="highest_qualification" class="label">Highest Qualification</label>
-                            <select name="highest_qualification" id="highest_qualification" required>
-                                <option value="" disabled selected>Select your qualification</option>
-                                <option value="High School">High School</option>
-                                <option value="Diploma">Diploma</option>
-                                <option value="Bachelor's">Bachelor's</option>
-                                <option value="Master's">Master's</option>
-                                <option value="PhD">PhD</option>
-                            </select>
-                        </div>
-                        
-                        <div class="field">
-                            <label for="field_of_study" class="label">Field Of Study</label>
-                            <select name="field_of_study" id="field_of_study" required>
-                                <option value="" disabled selected>Select your field of study</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Engineering">Engineering</option>
-                                <option value="Business Administration">Business Administration</option>
-                                <option value="Medicine">Medicine</option>
-                                <option value="Law">Law</option>
-                                <option value="Arts">Arts</option>
-                                <option value="Education">Education</option>
-                                <option value="Science">Science</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-buttons">
-                        <button type="button" class="btn-prev">Previous</button>
-                        <button type="button" class="btn-next">Next Step</button>
-                    </div>
+                <div class="field">
+                    <label for="confirm_password" class="label">Confirm Password</label>
+                    <input type="password" name="confirm_password" id="confirm_password" required placeholder="Confirm your password" maxlength="50" />
+                    <div id="password-match-error" class="error-message"></div>
+                </div>
                 </div>
                 
-                <!-- Page 3: Work Experience -->
-                <div class="page" data-page="3">
-                    <div class="title">Work Experience</div>
-                    
-                    <div class="field">
-                        <label for="experience_years" class="label">Years of Experience</label>
-                        <select name="experience_years" id="experience_years" required>
-                            <option value="" disabled selected>Select Years of Experience</option>
-                            <option value="0">0 (Fresher)</option>
-                            <option value="1">1 Year</option>
-                            <option value="2">2 Years</option>
-                            <option value="3">3 Years</option>
-                            <option value="4">4 Years</option>
-                            <option value="5">5+ Years</option>
-                        </select>
-                    </div>
-                    
-                    <div class="field">
-                        <div class="label">Upload Resume</div>
-                        <input type="text" name="resume_link" id="resume_link" required placeholder="Enter Google Drive link" title="Please enter a valid Google Drive link" class="styled-input" />
-                        <small style="display: block; margin-top: 5px; color: #666;">Only Google Drive links are allowed (e.g., https://drive.google.com/...)</small>
-                    </div>
-                    
-                    <div class="form-buttons">
-                        <button type="button" class="btn-prev">Previous</button>
-                        <button type="button" class="btn-next">Next Step</button>
-                    </div>
+                <div class="form-buttons">
+                <button type="button" class="btn-prev">Previous</button>
+                <button type="submit" class="submit">Register</button>
                 </div>
-                
-                <!-- Page 4: Skills and Qualifications with Search -->
-                <div class="page" data-page="4">
-                    <div class="title">Skills & Qualifications</div>
-                    
-                    <div class="field" id="skills-section">
-                        <div class="search-container">
-                            <input type="text" id="skill-search" class="search-input" placeholder="Search for skills...">
-                        </div>
-                        <div class="label">Select Your Skills</div>
-                        <div class="checkbox-group" id="skills-checkbox-group">
-                            {% for skill in skills %}
-                                <label class="checkbox-label skill-item" data-skill="{{ skill.skill_name.lower() }}">
-                                    <input type="checkbox" name="skills" value="{{ skill.id }}" /> 
-                                    {{ skill.skill_name }}
-                                </label>
-                            {% endfor %}
-                        </div>
-                        <div id="no-results" class="no-results" style="display: none;">No matching skills found</div>
-                    </div>
-                    
-                    <div class="form-buttons">
-                        <button type="button" class="btn-prev">Previous</button>
-                        <button type="button" class="btn-next">Next Step</button>
-                    </div>
-                </div>
-                
-                <!-- Page 5: Login Information -->
-                <div class="page" data-page="5">
-                    <div class="title">Login Information</div>
-                    
-                    <div class="fields-grid">
-                        <div class="field">
-                            <label for="login_email" class="label">Email Address</label>
-                            <input type="email" name="login_email" id="login_email" required placeholder="Enter your email address" />
-                            <small class="hint">This will be used for login.</small>
-                        </div>
-                    </div>
-                    
-                    <div class="fields-grid">
-                        <div class="field">
-                            <label for="password" class="label">Password</label>
-                            <input type="password" name="password" id="password" required placeholder="Create a strong password" />
-                            <div class="password-requirements">
-                                Password must be at least 8 characters long.
-                            </div>
-                        </div>
-                        
-                        <div class="field">
-                            <label for="confirm_password" class="label">Confirm Password</label>
-                            <input type="password" name="confirm_password" id="confirm_password" required placeholder="Confirm your password" />
-                            <div id="password-match-error" class="error-message"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-buttons">
-                        <button type="button" class="btn-prev">Previous</button>
-                        <button type="submit" class="submit">Register</button>
-                    </div>
-                </div>
+            </div>
             </div>
         </form>
     </div>
