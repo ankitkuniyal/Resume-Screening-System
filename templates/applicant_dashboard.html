@@ -153,7 +153,102 @@
     <script>
         let currentPage = 1;
         const jobsPerPage = 6;
-        let filteredJobs = Array.from(document.querySelectorAll('.job-card'));
+        let allJobs = Array.from(document.querySelectorAll('.job-card'));
+        let filteredJobs = [...allJobs];
+        
+        // Add data attributes to job cards when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all job cards with proper data attributes
+            document.querySelectorAll('.job-card').forEach(card => {
+                const jobType = card.querySelector('.job-type').textContent.trim();
+                const salaryText = card.querySelector('.salary').textContent;
+                const matchScore = parseInt(card.querySelector('.score').textContent);
+                const dateText = card.querySelector('.date').textContent;
+                
+                // Set data attributes
+                card.dataset.jobType = jobType;
+                card.dataset.matchScore = matchScore;
+                card.dataset.postedDate = parseInt(dateText.replace('d ago', ''));
+                
+                // Parse salary (handle different formats)
+                let salaryValue = 0;
+                if (salaryText.includes('$')) {
+                    const salaryNum = salaryText.replace(/[^0-9]/g, '');
+                    salaryValue = salaryNum ? parseInt(salaryNum) : 0;
+                }
+                card.dataset.salary = salaryValue;
+            });
+            
+            updatePagination();
+            
+            // Job Type Filter
+            document.getElementById('job-type-filter').addEventListener('change', function() {
+                const type = this.value;
+                if (type === 'all') {
+                    filteredJobs = [...allJobs];
+                } else {
+                    filteredJobs = allJobs.filter(card => {
+                        return card.dataset.jobType === type;
+                    });
+                }
+                currentPage = 1;
+                updatePagination();
+            });
+            
+            // Sort By Filter
+            document.getElementById('sort-by').addEventListener('change', function() {
+                const sortBy = this.value;
+                filteredJobs.sort((a, b) => {
+                    if (sortBy === 'date') {
+                        return b.dataset.postedDate - a.dataset.postedDate;
+                    } else if (sortBy === 'salary') {
+                        return b.dataset.salary - a.dataset.salary;
+                    } else { // match score
+                        return b.dataset.matchScore - a.dataset.matchScore;
+                    }
+                });
+                currentPage = 1;
+                updatePagination();
+            });
+            
+            // Reset Filters
+            document.getElementById('reset-filters').addEventListener('click', function() {
+                document.getElementById('job-type-filter').value = 'all';
+                document.getElementById('sort-by').value = 'match';
+                filteredJobs = [...allJobs];
+                currentPage = 1;
+                updatePagination();
+            });
+        });
+        
+        function updatePagination() {
+            const start = (currentPage - 1) * jobsPerPage;
+            const end = start + jobsPerPage;
+            
+            // Hide all jobs
+            document.querySelectorAll('.job-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show current page jobs
+            filteredJobs.slice(start, end).forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // Update page info
+            document.getElementById('current-page').textContent = currentPage;
+            
+            // Update button states
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            document.querySelector('.btn-prev').disabled = currentPage === 1;
+            document.querySelector('.btn-next').disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Show no jobs message if empty
+            const noJobsElement = document.querySelector('.no-jobs');
+            if (noJobsElement) {
+                noJobsElement.style.display = filteredJobs.length === 0 ? 'block' : 'none';
+            }
+        }
         
         function toggleDetails(button) {
             const card = button.closest('.job-card');
@@ -181,62 +276,9 @@
             currentPage = newPage;
             updatePagination();
         }
-        
-        function updatePagination() {
-            const start = (currentPage - 1) * jobsPerPage;
-            const end = start + jobsPerPage;
-            
-            // Hide all jobs
-            document.querySelectorAll('.job-card').forEach(card => {
-                card.style.display = 'none';
-            });
-            
-            // Show current page jobs
-            filteredJobs.slice(start, end).forEach(card => {
-                card.style.display = 'block';
-            });
-            
-            // Update page info
-            document.getElementById('current-page').textContent = currentPage;
-            
-            // Update button states
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-            document.querySelector('.btn-prev').disabled = currentPage === 1;
-            document.querySelector('.btn-next').disabled = currentPage === totalPages;
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            filteredJobs = Array.from(document.querySelectorAll('.job-card'));
-            updatePagination();
-            
-            // Filter functionality
-            document.getElementById('job-type-filter').addEventListener('change', function() {
-                const type = this.value;
-                filteredJobs = Array.from(document.querySelectorAll('.job-card')).filter(card => {
-                    return type === 'all' || card.dataset.jobType === type;
-                });
-                currentPage = 1;
-                updatePagination();
-            });
-            
-            // Sort functionality
-            document.getElementById('sort-by').addEventListener('change', function() {
-                const sortBy = this.value;
-                filteredJobs.sort((a, b) => {
-                    if (sortBy === 'date') {
-                        return b.dataset.postedDate - a.dataset.postedDate;
-                    } else if (sortBy === 'salary') {
-                        return b.dataset.salary - a.dataset.salary;
-                    } else {
-                        return b.dataset.matchScore - a.dataset.matchScore;
-                    }
-                });
-                currentPage = 1;
-                updatePagination();
-            });
-        });
-        </script>
+    </script>
+
+    
 <section id="applied_jobs">
     <h2>Jobs You Have Applied For</h2>
     <table>
