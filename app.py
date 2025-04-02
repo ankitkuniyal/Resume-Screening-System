@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request, ses
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
+from itsdangerous import URLSafeTimedSerializer
 import os
 import re
 import random
@@ -110,6 +111,22 @@ with app.app_context():
     db.create_all()
     initialize_data()
 
+def generate_token(email):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt='password-reset-salt')
+
+def verify_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(
+            token,
+            salt='password-reset-salt',
+            max_age=expiration
+        )
+        return email
+    except:
+        return None
+    
 @app.template_filter('time_ago')
 def time_ago_filter(dt):
     now = datetime.utcnow()
@@ -163,6 +180,50 @@ def logout():
     session.clear()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('home'))
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            token = generate_token(user.email)
+            reset_url = url_for('reset_password', token=token, _external=True)
+            
+            # Instead of sending email, we'll show the link on the page
+            flash(f'Password reset link: {reset_url}', 'info')
+            return render_template('forgot_password.html', reset_link=reset_url)
+        
+        flash('No account found with that email address.', 'danger')
+    
+    return render_template('forgot_password.html')
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = verify_token(token)
+    if not email:
+        flash('Invalid or expired reset link.', 'danger')
+        return redirect(url_for('forgot_password'))
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('forgot_password'))
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if password != confirm_password:
+            flash('Passwords do not match!', 'danger')
+        else:
+            user.password = generate_password_hash(password, method='sha256')
+            db.session.commit()
+            flash('Password updated successfully! You can now login.', 'success')
+            return redirect(url_for('login'))
+    
+    return render_template('reset_password.html')
 
 # Registration routes
 @app.route('/register/applicant', methods=['GET', 'POST'])
@@ -872,4 +933,4 @@ def api_job(job_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=3000)
+    app.run(debug=True, port=3200)
