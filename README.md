@@ -27,7 +27,7 @@ A Flask-based web application for employers to post jobs and screen applicants b
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/ankitkuniyal/resume-screening-system.git
+git clone https://github.com/yourusername/resume-screening-system.git
 cd resume-screening-system
 ```
 
