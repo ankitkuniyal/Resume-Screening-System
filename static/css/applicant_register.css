@@ -252,7 +252,6 @@ select:focus {
   border-radius: calc(var(--radius-default) - 0.2rem);
   transition: var(--transition-smooth);
   font-size: 0.95rem;
-  
 }
 
 .checkbox-group label:hover {
@@ -272,7 +271,6 @@ select:focus {
   margin-right: 0.7rem;
   position: relative;
   transition: var(--transition-smooth);
- 
 }
 
 .checkbox-group input[type="checkbox"]:checked {
@@ -291,16 +289,8 @@ select:focus {
 }
 
 /* Login Information Section */
-.page[data-page="4"] .title:nth-of-type(2) {
+.page[data-page="5"] .title {
   margin-top: 2.5rem;
-}
-
-.login-fields {
-  background-color: #f8fafc;
-  padding: 1.5rem;
-  border-radius: var(--radius-default);
-  border: 1px solid #e2e8f0;
-  margin-top: 1.5rem;
 }
 
 .password-field-group {
