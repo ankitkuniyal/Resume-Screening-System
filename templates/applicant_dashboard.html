@@ -3,50 +3,176 @@
 {% block title %}{{ applicant_name }}'s Dashboard{% endblock %}
 {% block styles %}
 <link rel="stylesheet" href="../static/css/applicant_dashboard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* Enhanced Filter Controls */
+    .filter-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .search-filter {
+        position: relative;
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border: 1px solid var(--gray-light);
+        border-radius: var(--radius-sm);
+        font-size: 16px;
+        height: 40px;
+        transition: var(--transition);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .filter-item {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 180px;
+    }
+
+    .filter-item label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .filter-select {
+        padding: 10px 15px;
+        border: 1px solid var(--gray-light);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        height: 40px;
+        width: 100%;
+    }
+
+    .btn-reset {
+        background: var(--gray-light);
+        color: var(--dark);
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        margin-left: auto;
+    }
+
+    @media (max-width: 768px) {
+        .filter-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-item {
+            width: 100%;
+        }
+        
+        .btn-reset {
+            margin-left: 0;
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
 {% endblock %}
 {% block content %}
 <header>
     <h1>Welcome, {{ applicant_name }}</h1>
     <nav>
         <ul>
-            <li><a href="{{ url_for('applicant_dashboard') }}">Home</a></li>
-            <li><a href="{{ url_for('applicant_profile') }}">Profile</a></li>
-            <li><a href="#applied_jobs">Applied Jobs</a></li>
+            <li><a href="{{ url_for('applicant_dashboard') }}" class="nav-link active">Home</a></li>
+            <li><a href="{{ url_for('applicant_profile') }}" class="nav-link">Profile</a></li>
+            <li><a href="#applied_jobs" class="nav-link">Applied Jobs</a></li>
             <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
         </ul>
     </nav>
 </header>
 
 <main>
-    
-
     <section id="job-listings" class="job-listings-container">
-        <div class="job-filters">
-            <div class="filter-group">
-                <label for="job-type-filter">Job Type:</label>
-                <select id="job-type-filter" class="filter-select">
-                    <option value="all">All Types</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                </select>
+        <!-- Enhanced Filter Controls -->
+        <div class="filter-controls">
+            <div class="search-filter">
+                <input type="text" id="job-search" placeholder="Search jobs..." class="search-input">
+                <i class="fas fa-search search-icon"></i>
             </div>
             
-            <div class="filter-group">
-                <label for="sort-by">Sort By:</label>
-                <select id="sort-by" class="filter-select">
-                    <option value="match" {% if sort_by == 'match' %}selected{% endif %}>Best Match</option>
-                    <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Newest</option>
-                    <option value="salary" {% if sort_by == 'salary' %}selected{% endif %}>Salary</option>
-                </select>
+            <div class="filter-row">
+                <div class="filter-item">
+                    <label for="job-type-filter"><i class="fas fa-briefcase"></i> Job Type:</label>
+                    <select id="job-type-filter" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                        <option value="Remote">Remote</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="experience-filter"><i class="fas fa-chart-line"></i> Experience:</label>
+                    <select id="experience-filter" class="filter-select">
+                        <option value="all">All Levels</option>
+                        <option value="Entry">Entry Level</option>
+                        <option value="Mid">Mid Level</option>
+                        <option value="Senior">Senior Level</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="sort-by"><i class="fas fa-sort"></i> Sort By:</label>
+                    <select id="sort-by" class="filter-select">
+                        <option value="match">Best Match</option>
+                        <option value="date">Newest</option>
+                        <option value="salary">Highest Salary</option>
+                    </select>
+                </div>
+                
+                <button id="reset-filters" class="btn-reset">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
             </div>
-            
-            <button id="reset-filters" class="btn btn-outline-secondary">Reset</button>
         </div>
     
         <div class="job-grid">
             {% for job in job_postings %}
-            <div class="job-card" data-job-id="{{ job.id }}">
+            <div class="job-card" 
+                 data-job-id="{{ job.id }}"
+                 data-job-type="{{ job.job_type }}"
+                 data-experience="{{ job.experience_level }}"
+                 data-match-score="{{ job.match_score }}"
+                 data-posted-date="{{ (now - job.posted_date).days }}"
+                 data-salary="{{ job.salary_num if job.salary_num else 0 }}"
+                 data-job-title="{{ job.job_title.lower() }}"
+                 data-company="{{ job.company.lower() }}"
+                 data-location="{{ job.location.lower() }}"
+                 data-description="{{ job.description.lower() }}"
+                 data-skills="{{ job.required_skills|join(',')|lower }}">
                 <div class="job-card-header">
                     <h3>{{ job.job_title }}</h3>
                     <div class="company-location">
@@ -59,6 +185,7 @@
                     <div class="job-meta">
                         <span class="salary">{{ job.salary if job.salary else 'Negotiable' }}</span>
                         <span class="job-type">{{ job.job_type }}</span>
+                        <span class="experience">{{ job.experience_level }}</span>
                         <span class="date">{{ (now - job.posted_date).days }}d ago</span>
                     </div>
                     
@@ -145,177 +272,221 @@
     
         <div class="pagination">
             <button class="btn-prev" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i></button>
-            <div class="page-info">Page <span id="current-page">1</span></div>
+            <div class="page-info">Page <span id="current-page">1</span> of <span id="total-pages" class="total-pages">1</span></div>
             <button class="btn-next" onclick="changePage(1)"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
     <script>
-        let currentPage = 1;
-        const jobsPerPage = 6;
-        let allJobs = Array.from(document.querySelectorAll('.job-card'));
-        let filteredJobs = [...allJobs];
+        // Configuration
+        const config = {
+            jobsPerPage: 6,
+            debounceTime: 300
+        };
         
-        // Add data attributes to job cards when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize all job cards with proper data attributes
-            document.querySelectorAll('.job-card').forEach(card => {
-                const jobType = card.querySelector('.job-type').textContent.trim();
-                const salaryText = card.querySelector('.salary').textContent;
-                const matchScore = parseInt(card.querySelector('.score').textContent);
-                const dateText = card.querySelector('.date').textContent;
-                
-                // Set data attributes
-                card.dataset.jobType = jobType;
-                card.dataset.matchScore = matchScore;
-                card.dataset.postedDate = parseInt(dateText.replace('d ago', ''));
-                
-                // Parse salary (handle different formats)
-                let salaryValue = 0;
-                if (salaryText.includes('$')) {
-                    const salaryNum = salaryText.replace(/[^0-9]/g, '');
-                    salaryValue = salaryNum ? parseInt(salaryNum) : 0;
-                }
-                card.dataset.salary = salaryValue;
+        // State management
+        const state = {
+            currentPage: 1,
+            allJobs: [],
+            filteredJobs: [],
+            filters: {
+                searchTerm: '',
+                jobType: 'all',
+                experience: 'all',
+                sortBy: 'match'
+            }
+        };
+        
+        // DOM Elements
+        const elements = {
+            jobSearch: document.getElementById('job-search'),
+            jobTypeFilter: document.getElementById('job-type-filter'),
+            experienceFilter: document.getElementById('experience-filter'),
+            sortBy: document.getElementById('sort-by'),
+            resetBtn: document.getElementById('reset-filters'),
+            currentPage: document.getElementById('current-page'),
+            totalPages: document.getElementById('total-pages'),
+            prevBtn: document.querySelector('.btn-prev'),
+            nextBtn: document.querySelector('.btn-next'),
+            noJobs: document.querySelector('.no-jobs')
+        };
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            state.allJobs = Array.from(document.querySelectorAll('.job-card'));
+            state.filteredJobs = [...state.allJobs];
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initial render
+            updateUI();
+        }
+        
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Search input with debouncing
+            elements.jobSearch.addEventListener('input', debounce(() => {
+                state.filters.searchTerm = elements.jobSearch.value.toLowerCase().trim();
+                applyFilters();
+            }, config.debounceTime));
+            
+            // Filter dropdowns
+            elements.jobTypeFilter.addEventListener('change', () => {
+                state.filters.jobType = elements.jobTypeFilter.value;
+                applyFilters();
             });
             
-            updatePagination();
+            elements.experienceFilter.addEventListener('change', () => {
+                state.filters.experience = elements.experienceFilter.value;
+                applyFilters();
+            });
             
-            // 4. Perfect Sorting Function (FIXED DIRECTION)
-        function sortJobs(sortBy) {
-            filteredJobs.sort((a, b) => {
-                // Get numeric values for comparison
-                let aValue, bValue;
-    
+            // Sort dropdown
+            elements.sortBy.addEventListener('change', () => {
+                state.filters.sortBy = elements.sortBy.value;
+                applyFilters();
+            });
+            
+            // Reset button
+            elements.resetBtn.addEventListener('click', resetFilters);
+        }
+        
+        // Apply all filters and sorting
+        function applyFilters() {
+            // Filter jobs
+            state.filteredJobs = state.allJobs.filter(job => {
+                const matchesSearch = state.filters.searchTerm === '' || 
+                    job.dataset.jobTitle.includes(state.filters.searchTerm) ||
+                    job.dataset.company.includes(state.filters.searchTerm) ||
+                    job.dataset.location.includes(state.filters.searchTerm) ||
+                    job.dataset.description.includes(state.filters.searchTerm) ||
+                    job.dataset.skills.includes(state.filters.searchTerm);
+                
+                const matchesJobType = state.filters.jobType === 'all' || 
+                    job.dataset.jobType === state.filters.jobType;
+                
+                const matchesExperience = state.filters.experience === 'all' || 
+                    job.dataset.experience === state.filters.experience;
+                
+                return matchesSearch && matchesJobType && matchesExperience;
+            });
+            
+            // Sort jobs
+            sortJobs();
+            
+            // Reset to first page
+            state.currentPage = 1;
+            
+            // Update UI
+            updateUI();
+        }
+        
+        // Sort jobs based on current sort criteria
+        function sortJobs() {
+            state.filteredJobs.sort((a, b) => {
+                const sortBy = state.filters.sortBy;
+                
                 switch(sortBy) {
-                    case 'match':  // Highest % first
-                        aValue = parseFloat(a.dataset.matchScore);
-                        bValue = parseFloat(b.dataset.matchScore);
-                        return bValue - aValue;
+                    case 'match':
+                        return parseFloat(b.dataset.matchScore) - parseFloat(a.dataset.matchScore);
                         
-                    case 'date':   // Newest first
-                        aValue = parseFloat(a.dataset.postedDate);
-                        bValue = parseFloat(b.dataset.postedDate);
-                        return bValue - aValue; // Newest dates have higher timestamps
+                    case 'date':
+                        return parseFloat(a.dataset.postedDate) - parseFloat(b.dataset.postedDate);
                         
-                    case 'salary': // Highest salary first, "Negotiable" last
-                        aValue = parseFloat(a.dataset.salary);
-                        bValue = parseFloat(b.dataset.salary);
-                        if (aValue === 0) return 1;   // "Negotiable" goes to end
-                        if (bValue === 0) return -1;  // Non-zero comes first
-                        return bValue - aValue;       // Higher salaries first
+                    case 'salary':
+                        const aSalary = parseFloat(a.dataset.salary);
+                        const bSalary = parseFloat(b.dataset.salary);
+                        if (aSalary === 0) return 1;
+                        if (bSalary === 0) return -1;
+                        return bSalary - aSalary;
                         
                     default:
                         return 0;
                 }
             });
         }
-    
-        // 5. Filter jobs (updated to include search)
-        function filterJobs() {
-            const typeFilter = document.getElementById('job-type-filter').value;
-            const sortBy = document.getElementById('sort-by').value;
-            const searchTerm = jobSearch.value.toLowerCase().trim();
+        
+        // Reset all filters to default
+        function resetFilters() {
+            // Reset filter values
+            elements.jobSearch.value = '';
+            elements.jobTypeFilter.value = 'all';
+            elements.experienceFilter.value = 'all';
+            elements.sortBy.value = 'match';
             
-            filteredJobs = allJobs.filter(card => 
-                (typeFilter === 'all' || card.dataset.jobType === typeFilter) &&
-                (searchTerm === '' || 
-                 card.dataset.jobTitle.includes(searchTerm) || 
-                 card.dataset.company.includes(searchTerm) || 
-                 card.dataset.location.includes(searchTerm) || 
-                 card.dataset.description.includes(searchTerm))
-            );
+            // Reset state
+            state.filters = {
+                searchTerm: '',
+                jobType: 'all',
+                experience: 'all',
+                sortBy: 'match'
+            };
             
-            sortJobs(sortBy);
-            currentPage = 1;
+            // Reapply filters
+            applyFilters();
+        }
+        
+        // Update the UI based on current state
+        function updateUI() {
+            updateJobDisplay();
             updatePagination();
+            updateNoJobsMessage();
         }
-    
-        // 6. Update pagination
+        
+        // Show/hide jobs based on current page
+        function updateJobDisplay() {
+            const start = (state.currentPage - 1) * config.jobsPerPage;
+            const end = start + config.jobsPerPage;
+            
+            // Hide all jobs
+            state.allJobs.forEach(job => job.style.display = 'none');
+            
+            // Show filtered jobs for current page
+            state.filteredJobs.slice(start, end).forEach(job => {
+                job.style.display = 'block';
+            });
+        }
+        
+        // Update pagination controls
         function updatePagination() {
-            const start = (currentPage - 1) * jobsPerPage;
-            const end = start + jobsPerPage;
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage) || 1;
+            const totalPages = Math.ceil(state.filteredJobs.length / config.jobsPerPage) || 1;
             
-            // Hide all jobs first
-            allJobs.forEach(card => card.style.display = 'none');
+            // Update page info
+            elements.currentPage.textContent = state.currentPage;
+            elements.totalPages.textContent = totalPages;
             
-            // Show jobs for current page
-            filteredJobs.slice(start, end).forEach(card => card.style.display = 'block');
+            // Update button states
+            elements.prevBtn.disabled = state.currentPage === 1;
+            elements.nextBtn.disabled = state.currentPage === totalPages || totalPages === 0;
             
-            // Update pagination controls
-            document.getElementById('current-page').textContent = currentPage;
-            document.getElementById('total-pages').textContent = totalPages;
-            
-            const prevBtn = document.querySelector('.btn-prev');
-            const nextBtn = document.querySelector('.btn-next');
-            
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-            
-            // Show total pages if more than 1
-            document.querySelector('.total-pages').style.display = 
-                totalPages > 1 ? 'inline' : 'none';
-            
-            // Show/hide no jobs message
-            document.querySelector('.no-jobs').style.display = 
-                filteredJobs.length ? 'none' : 'block';
+            // Show/hide total pages
+            elements.totalPages.style.display = totalPages > 1 ? 'inline' : 'none';
         }
-    
-        // 7. Change page with smooth scroll
+        
+        // Show/hide no jobs message
+        function updateNoJobsMessage() {
+            elements.noJobs.style.display = state.filteredJobs.length ? 'none' : 'flex';
+        }
+        
+        // Change page
         function changePage(delta) {
-            const newPage = currentPage + delta;
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            const newPage = state.currentPage + delta;
+            const totalPages = Math.ceil(state.filteredJobs.length / config.jobsPerPage);
+            
             if (newPage < 1 || newPage > totalPages) return;
             
-            currentPage = newPage;
-            updatePagination();
+            state.currentPage = newPage;
+            updateUI();
             
-            // Smooth scroll to top of job listings
+            // Smooth scroll to top
             document.getElementById('job-listings').scrollIntoView({ 
                 behavior: 'smooth',
                 block: 'start'
             });
         }
-            // Reset Filters
-            document.getElementById('reset-filters').addEventListener('click', function() {
-                document.getElementById('job-type-filter').value = 'all';
-                document.getElementById('sort-by').value = 'match';
-                filteredJobs = [...allJobs];
-                currentPage = 1;
-                updatePagination();
-            });
-        });
         
-        function updatePagination() {
-            const start = (currentPage - 1) * jobsPerPage;
-            const end = start + jobsPerPage;
-            
-            // Hide all jobs
-            document.querySelectorAll('.job-card').forEach(card => {
-                card.style.display = 'none';
-            });
-            
-            // Show current page jobs
-            filteredJobs.slice(start, end).forEach(card => {
-                card.style.display = 'block';
-            });
-            
-            // Update page info
-            document.getElementById('current-page').textContent = currentPage;
-            
-            // Update button states
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-            document.querySelector('.btn-prev').disabled = currentPage === 1;
-            document.querySelector('.btn-next').disabled = currentPage === totalPages || totalPages === 0;
-            
-            // Show no jobs message if empty
-            const noJobsElement = document.querySelector('.no-jobs');
-            if (noJobsElement) {
-                noJobsElement.style.display = filteredJobs.length === 0 ? 'block' : 'none';
-            }
-        }
-        
+        // Toggle job details
         function toggleDetails(button) {
             const card = button.closest('.job-card');
             const details = card.querySelector('.job-details');
@@ -332,49 +503,52 @@
             }
         }
         
-        function changePage(delta) {
-            const newPage = currentPage + delta;
-            if (newPage < 1) return;
-            
-            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-            if (newPage > totalPages) return;
-            
-            currentPage = newPage;
-            updatePagination();
+        // Debounce function for performance
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this, args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
         }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 
-    
-<section id="applied_jobs">
-    <h2>Jobs You Have Applied For</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Job Title</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Job Type</th>
-                <th>Applied On</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for applied_job in applied_jobs %}
-            <tr>
-                <td>{{ applied_job.job.job_title }}</td>
-                <td>{{ applied_job.job.company }}</td>
-                <td>{{ applied_job.job.location }}</td>
-                <td>{{ applied_job.job.job_type }}</td>
-                <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
-                <td>{{ applied_job.status }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5">You have not applied to any jobs yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
+    <section id="applied_jobs">
+        <h2>Jobs You Have Applied For</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Job Type</th>
+                    <th>Applied On</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for applied_job in applied_jobs %}
+                <tr>
+                    <td>{{ applied_job.job.job_title }}</td>
+                    <td>{{ applied_job.job.company }}</td>
+                    <td>{{ applied_job.job.location }}</td>
+                    <td>{{ applied_job.job.job_type }}</td>
+                    <td>{{ applied_job.application_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ applied_job.status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">You have not applied to any jobs yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 </main>
 {% endblock %}

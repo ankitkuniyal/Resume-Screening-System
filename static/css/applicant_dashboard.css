@@ -984,10 +984,8 @@ tbody tr:hover {
   color: var(--gray);
 }
 
-<<<<<<< HEAD
 
-=======
-/* Additional styles for expanded rows */
+/* Additional  styles for expanded rows */
 .job-row-details {
   display: none;
   padding: 1rem;
@@ -1037,7 +1035,6 @@ tbody tr:hover {
   border-radius: 20px;
   font-size: 0.875rem;
 }
->>>>>>> 435134c2e7b46069cb9ff0a7576bf94556f9d02c
 
 .edit-form-container {
   display: none;
